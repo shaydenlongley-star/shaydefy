@@ -50,77 +50,114 @@
       fired = true;
       if (skipBtn) gsap.to(skipBtn, { opacity: 0, duration: 0.15 });
 
-      /* --- Character scramble on all text (from VHS component) --- */
+      /* --- Canvas scan bars: fixed over everything --- */
+      var cvs = document.createElement('canvas');
+      cvs.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:200000;';
+      cvs.width  = window.innerWidth;
+      cvs.height = window.innerHeight;
+      document.body.appendChild(cvs);
+      var ctx = cvs.getContext('2d');
+
+      /* --- Character scramble --- */
       var glitchChars = '!@#$%^&*()_+-=[]{}|;:,.<>?█▓▒░';
       var textEls = Array.from(overlay.querySelectorAll('.era-h1,.era-h2,.era-logo,.era-blink,.era-location,.era-counter'));
       var originals = textEls.map(function (el) { return el.textContent; });
 
       var scrambleId = setInterval(function () {
         textEls.forEach(function (el, i) {
-          if (Math.random() > 0.45) {
+          if (Math.random() > 0.4) {
             var orig = originals[i];
             el.textContent = orig.split('').map(function (c) {
-              return Math.random() > 0.6 ? glitchChars[Math.floor(Math.random() * glitchChars.length)] : c;
+              return Math.random() > 0.55 ? glitchChars[Math.floor(Math.random() * glitchChars.length)] : c;
             }).join('');
             setTimeout(function () { el.textContent = orig; }, 50 + Math.random() * 90);
           }
         });
-      }, 75);
+      }, 70);
 
-      /* --- RGB text shadow split (from VHS component) --- */
-      gsap.to(textEls, {
-        textShadow: '3px 0 #ff0000, -3px 0 #00ffff',
-        duration: 0.08,
-        repeat: -1,
-        yoyo: true,
-        ease: 'power2.inOut'
-      });
+      /* --- RGB text shadow split --- */
+      gsap.to(textEls, { textShadow: '4px 0 #ff0000, -4px 0 #00ffff', duration: 0.09, repeat: -1, yoyo: true, ease: 'power2.inOut' });
 
-      /* --- Overlay glitch pattern (from VHS glitchTl, escalating x4) --- */
-      var tl = gsap.timeline();
+      /* --- Hue-rotate + x-shift loop on overlay (VHS glitchTl) --- */
+      var glitchTl = gsap.timeline({ repeat: -1, repeatDelay: 0.25 });
+      glitchTl
+        .to(overlay, { filter: 'hue-rotate(180deg) saturate(3)', duration: 0.10 })
+        .to(overlay, { filter: 'none', duration: 0.08 })
+        .to(overlay, { x:  9, duration: 0.05 })
+        .to(overlay, { x: -9, duration: 0.05 })
+        .to(overlay, { x:  0, duration: 0.05 });
 
-      /* Pass 1 — subtle, old site still readable */
-      tl.to(overlay, { filter: 'hue-rotate(180deg) saturate(2)', duration: 0.10 }, 0.00)
-        .to(overlay, { filter: 'none', duration: 0.10 }, 0.10)
-        .to(overlay, { x:  5, duration: 0.05 }, 0.20)
-        .to(overlay, { x: -5, duration: 0.05 }, 0.25)
-        .to(overlay, { x:  0, duration: 0.05 }, 0.30);
+      /* --- Draw scan bars at given intensity 0→1 --- */
+      function drawBars(intensity) {
+        ctx.clearRect(0, 0, cvs.width, cvs.height);
+        var n = Math.floor(intensity * 45) + 2;
+        for (var i = 0; i < n; i++) {
+          var y  = Math.random() * cvs.height;
+          var h  = Math.random() < 0.6
+                    ? 1 + Math.random() * 2                        /* thin lines */
+                    : 4 + Math.random() * intensity * 18;          /* fat bars */
+          var rnd = Math.random();
+          var alpha = 0.55 + intensity * 0.45;
+          if      (rnd > 0.55) ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
+          else if (rnd > 0.25) ctx.fillStyle = 'rgba(255,0,0,'     + alpha + ')';
+          else                 ctx.fillStyle = 'rgba(0,255,255,'   + alpha + ')';
+          ctx.fillRect(0, y, cvs.width, h);
+        }
+      }
 
-      /* Pass 2 — stronger */
-      tl.to(overlay, { filter: 'hue-rotate(180deg) saturate(4)', duration: 0.10 }, 0.45)
-        .to(overlay, { filter: 'none', duration: 0.08 }, 0.55)
-        .to(overlay, { x:  14, duration: 0.05 }, 0.63)
-        .to(overlay, { x: -14, duration: 0.05 }, 0.68)
-        .to(overlay, { x:   0, duration: 0.05 }, 0.73);
+      /* --- RAF loop: IN phase builds bars, OUT phase removes them --- */
+      var IN_MS   = 1600;
+      var OUT_MS  = 1100;
+      var phase   = 'in';
+      var startT  = null;
+      var heroFired = false;
 
-      /* Pass 3 — colour inversion, tearing */
-      tl.to(overlay, { filter: 'hue-rotate(180deg) saturate(6) invert(0.6)', duration: 0.08 }, 0.88)
-        .to(overlay, { filter: 'saturate(0) brightness(2)', duration: 0.06 }, 0.96)
-        .to(overlay, { filter: 'none', duration: 0.05 }, 1.02)
-        .to(overlay, { x:  22, duration: 0.04 }, 1.07)
-        .to(overlay, { x: -22, duration: 0.04 }, 1.11)
-        .to(overlay, { x:   0, duration: 0.04 }, 1.15);
+      function tick(now) {
+        if (!startT) startT = now;
+        var elapsed   = now - startT;
+        var intensity, done;
 
-      /* Pass 4 — full breakdown */
-      tl.to(overlay, { filter: 'hue-rotate(180deg) saturate(8) contrast(3)', duration: 0.06 }, 1.22)
-        .to(overlay, { filter: 'saturate(0) brightness(0.2)', x: -30, duration: 0.04 }, 1.28)
-        .to(overlay, { filter: 'invert(1) contrast(5)', x: 30, duration: 0.04 }, 1.32)
-        .to(overlay, { filter: 'brightness(16)', x: 0, duration: 0.10, ease: 'power3.in' }, 1.36);
+        if (phase === 'in') {
+          intensity = Math.min(elapsed / IN_MS, 1);
 
-      /* Clean up scramble, fire hero, fade overlay */
-      tl.call(function () {
-        clearInterval(scrambleId);
-        gsap.killTweensOf(textEls);
-        textEls.forEach(function (el, i) { el.textContent = originals[i]; });
-      }, null, 1.40);
-      tl.call(revealHero, null, 1.40);
-      tl.to(overlay, {
-        opacity: 0, filter: 'brightness(1)', duration: 0.32, ease: 'power2.out',
-        onComplete: function () { overlay.style.display = 'none'; }
-      }, 1.42);
+          /* Fade old site overlay as bars fill screen */
+          if (intensity > 0.55) {
+            overlay.style.opacity = String(Math.max(1 - (intensity - 0.55) / 0.45, 0));
+          }
+
+          if (intensity >= 1) {
+            if (!heroFired) {
+              heroFired = true;
+              glitchTl.kill();
+              gsap.killTweensOf(textEls);
+              clearInterval(scrambleId);
+              gsap.set(overlay, { clearProps: 'all' });
+              overlay.style.display = 'none';
+              revealHero();
+            }
+            phase  = 'out';
+            startT = now;
+          }
+          done = false;
+        } else {
+          intensity = Math.max(1 - elapsed / OUT_MS, 0);
+          done = (intensity <= 0);
+        }
+
+        if (done) {
+          ctx.clearRect(0, 0, cvs.width, cvs.height);
+          cvs.remove();
+          return;
+        }
+
+        if (Math.random() > 0.12) drawBars(intensity);
+        requestAnimationFrame(tick);
+      }
+
+      requestAnimationFrame(tick);
     }
 
-    var timer = setTimeout(glitchOut, 1800);
+    var timer = setTimeout(glitchOut, 1600);
     if (skipBtn) skipBtn.addEventListener('click', function () {
       clearTimeout(timer);
       glitchOut();
