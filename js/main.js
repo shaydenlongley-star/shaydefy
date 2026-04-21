@@ -52,26 +52,36 @@
 
       var tl = gsap.timeline();
 
-      /* Drain colour — old site dying */
-      tl.to(overlay, { filter: 'saturate(0) brightness(1.1)', duration: 0.35, ease: 'power2.in' }, 0);
+      /* Hit 1 — subtle flicker, old site still recognisable */
+      tl.to(overlay, { filter: 'hue-rotate(55deg) saturate(3) brightness(1.3)', duration: 0.07, ease: 'none' }, 0);
+      tl.to(overlay, { x: -7, duration: 0.05, ease: 'none' }, 0);
+      tl.to(overlay, { filter: 'none', x: 0, duration: 0.05, ease: 'none' }, 0.07);
 
-      /* Glitch burst */
-      tl.to(overlay, { filter: 'saturate(0) hue-rotate(90deg) brightness(2)', duration: 0.07, ease: 'none' }, 0.35);
-      tl.to(overlay, { x: -12, duration: 0.05, ease: 'none' }, 0.35);
-      tl.to(overlay, { filter: 'saturate(0) brightness(1)', x: 0, duration: 0.04, ease: 'none' }, 0.42);
-      tl.to(overlay, { filter: 'hue-rotate(200deg) saturate(6) brightness(2.5)', duration: 0.06, ease: 'none' }, 0.46);
-      tl.to(overlay, { x: 10, duration: 0.04, ease: 'none' }, 0.46);
-      tl.to(overlay, { filter: 'saturate(0) brightness(1)', x: 0, duration: 0.04, ease: 'none' }, 0.52);
+      /* Hit 2 — stronger, monochrome snap */
+      tl.to(overlay, { filter: 'saturate(0) brightness(1.9) contrast(1.8)', duration: 0.07, ease: 'none' }, 0.28);
+      tl.to(overlay, { x: 13, duration: 0.05, ease: 'none' }, 0.28);
+      tl.to(overlay, { filter: 'none', x: 0, duration: 0.06, ease: 'none' }, 0.35);
 
-      /* White flash */
-      tl.to(overlay, { filter: 'brightness(12)', duration: 0.1, ease: 'power3.in' }, 0.56);
+      /* Hit 3 — full colour corruption */
+      tl.to(overlay, { filter: 'hue-rotate(180deg) saturate(6) brightness(2)', duration: 0.06, ease: 'none' }, 0.52);
+      tl.to(overlay, { x: -18, duration: 0.04, ease: 'none' }, 0.52);
+      tl.to(overlay, { filter: 'saturate(0) brightness(0.3)', x: 18, duration: 0.04, ease: 'none' }, 0.58);
+      tl.to(overlay, { filter: 'hue-rotate(280deg) saturate(9) brightness(2.8)', x: -8, duration: 0.04, ease: 'none' }, 0.62);
+      tl.to(overlay, { filter: 'none', x: 0, duration: 0.03, ease: 'none' }, 0.66);
 
-      /* Fire hero, fade overlay */
-      tl.call(revealHero, null, 0.58);
+      /* Hit 4 — rapid-fire breakdown */
+      tl.to(overlay, { filter: 'hue-rotate(100deg) saturate(12) brightness(3.5)', x: 12, duration: 0.04, ease: 'none' }, 0.75);
+      tl.to(overlay, { filter: 'saturate(0) brightness(0.1)', x: -12, duration: 0.03, ease: 'none' }, 0.79);
+
+      /* White flash — old site dies */
+      tl.to(overlay, { filter: 'brightness(16)', x: 0, duration: 0.09, ease: 'power3.in' }, 0.82);
+
+      /* Hero fires mid-flash, overlay fades */
+      tl.call(revealHero, null, 0.86);
       tl.to(overlay, {
-        opacity: 0, filter: 'brightness(1)', duration: 0.3, ease: 'power2.out',
+        opacity: 0, filter: 'brightness(1)', duration: 0.32, ease: 'power2.out',
         onComplete: function () { overlay.style.display = 'none'; }
-      }, 0.62);
+      }, 0.88);
     }
 
     var timer = setTimeout(glitchOut, 1800);
