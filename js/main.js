@@ -103,22 +103,31 @@
       var startT   = null;
       var heroFired = false;
 
-      /* Pre-generate fixed bar positions that tile the full screen */
-      var NUM_BARS = 10;
+      /* Fixed bars — evenly spaced, grow in place, no flicker */
+      var NUM_BARS = 8;
       var bars = [];
       for (var b = 0; b < NUM_BARS; b++) {
-        bars.push({
-          cy: (b + 0.5) / NUM_BARS * cvs.height + (Math.random() - 0.5) * 20,
-          maxH: (cvs.height / NUM_BARS) * 2.2
-        });
+        bars.push((b + 0.5) / NUM_BARS * cvs.height);
       }
+      var maxBarH = (cvs.height / NUM_BARS) * 2.4;
 
       function drawBars(intensity) {
         ctx.clearRect(0, 0, cvs.width, cvs.height);
-        ctx.fillStyle = 'rgba(255,252,248,' + (0.75 + intensity * 0.25).toFixed(2) + ')';
-        bars.forEach(function (bar) {
-          var h = bar.maxH * intensity;
-          ctx.fillRect(0, bar.cy - h / 2, cvs.width, h);
+
+        if (intensity >= 0.85) {
+          /* Snap to solid white */
+          var wAlpha = (intensity - 0.85) / 0.15;
+          ctx.fillStyle = 'rgba(255,252,248,' + wAlpha.toFixed(3) + ')';
+          ctx.fillRect(0, 0, cvs.width, cvs.height);
+          return;
+        }
+
+        /* Bars grow simultaneously from their fixed centres */
+        var growI = intensity / 0.85;
+        ctx.fillStyle = 'rgba(255,252,248,' + (0.7 + growI * 0.3).toFixed(2) + ')';
+        bars.forEach(function (cy) {
+          var h = maxBarH * growI;
+          ctx.fillRect(0, cy - h / 2, cvs.width, h);
         });
       }
 
