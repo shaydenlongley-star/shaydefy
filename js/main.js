@@ -89,44 +89,33 @@
         .to(overlay, { x: -5, duration: 0.05 })
         .to(overlay, { x:  0, duration: 0.05 });
 
-      /* Canvas: thick white VHS tracking bars build up and take over */
-      var cvs = document.createElement('canvas');
-      cvs.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:200000;';
-      cvs.width  = window.innerWidth;
-      cvs.height = window.innerHeight;
-      document.body.appendChild(cvs);
-      var ctx = cvs.getContext('2d');
-
-      /* 8 bars evenly spaced — GSAP-driven so timing is exact */
-      var NUM_BARS   = 8;
-      var barCentres = [];
+      /* White bar divs — CSS elements, impossible to miss */
+      var NUM_BARS = 8;
+      var barDivs  = [];
       for (var b = 0; b < NUM_BARS; b++) {
-        barCentres.push((b + 0.5) / NUM_BARS * cvs.height);
+        var bd = document.createElement('div');
+        bd.style.cssText =
+          'position:fixed;left:0;width:100vw;height:0;background:#fff;' +
+          'pointer-events:none;z-index:200000;' +
+          'top:' + ((b + 0.5) / NUM_BARS * 100) + 'vh;' +
+          'transform:translateY(-50%);';
+        document.body.appendChild(bd);
+        barDivs.push(bd);
       }
-      var maxBarH = (cvs.height / NUM_BARS) * 2.6;
+      var barMaxH = (100 / NUM_BARS * 2.6) + 'vh';
 
-      var growObj = { p: 0 };
-
-      gsap.to(growObj, {
-        p: 1,
+      /* All bars grow at once */
+      gsap.to(barDivs, {
+        height: barMaxH,
         duration: 1.8,
         ease: 'power2.inOut',
-        onUpdate: function () {
-          var p = growObj.p;
-          ctx.clearRect(0, 0, cvs.width, cvs.height);
-          overlay.style.opacity = String(Math.max(1 - p * 1.6, 0));
-          ctx.fillStyle = 'white';
-          barCentres.forEach(function (cy) {
-            ctx.fillRect(0, cy - (maxBarH * p) / 2, cvs.width, maxBarH * p);
-          });
+        stagger: 0,
+        onStart: function () {
+          gsap.to(overlay, { opacity: 0, duration: 1.2, ease: 'power2.in' });
         },
         onComplete: function () {
-          /* Screen fully white — hold briefly */
-          ctx.fillStyle = 'white';
-          ctx.fillRect(0, 0, cvs.width, cvs.height);
-
+          /* Hold white, then fire hero and dissolve */
           setTimeout(function () {
-            /* Fire hero behind the white */
             glitchTl.kill();
             gsap.killTweensOf(textEls);
             clearInterval(scrambleId);
@@ -134,19 +123,11 @@
             overlay.style.display = 'none';
             window.dispatchEvent(new CustomEvent('introComplete'));
             revealHero();
-
-            /* Dissolve white off real site */
-            var outObj = { a: 1 };
-            gsap.to(outObj, {
-              a: 0,
+            gsap.to(barDivs, {
+              opacity: 0,
               duration: 0.7,
               ease: 'power2.out',
-              onUpdate: function () {
-                ctx.clearRect(0, 0, cvs.width, cvs.height);
-                ctx.fillStyle = 'rgba(255,255,255,' + outObj.a.toFixed(3) + ')';
-                ctx.fillRect(0, 0, cvs.width, cvs.height);
-              },
-              onComplete: function () { cvs.remove(); }
+              onComplete: function () { barDivs.forEach(function (d) { d.remove(); }); }
             });
           }, 300);
         }
