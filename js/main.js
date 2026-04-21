@@ -89,33 +89,72 @@
         .to(overlay, { x: -5, duration: 0.05 })
         .to(overlay, { x:  0, duration: 0.05 });
 
-      /* White bar divs — CSS elements, impossible to miss */
-      var NUM_BARS = 8;
-      var barDivs  = [];
-      for (var b = 0; b < NUM_BARS; b++) {
-        var bd = document.createElement('div');
-        bd.style.cssText =
-          'position:fixed;left:0;width:100vw;height:0;background:#fff;' +
-          'pointer-events:none;z-index:200000;' +
-          'top:' + ((b + 0.5) / NUM_BARS * 100) + 'vh;' +
-          'transform:translateY(-50%);';
-        document.body.appendChild(bd);
-        barDivs.push(bd);
-      }
-      var barMaxH = (100 / NUM_BARS * 2.6) + 'vh';
+      /* Canvas bars — exact port of the shader's glitch band logic:
+         step(0.98, random(vec2(floor(uTime*10), floor(uv.y*50))))
+         Threshold drops 0.98→0 over BUILD_MS so bands multiply until full white */
+      var cvs = document.createElement('canvas');
+      cvs.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:200000;';
+      cvs.width  = window.innerWidth;
+      cvs.height = window.innerHeight;
+      document.body.appendChild(cvs);
+      var ctx = cvs.getContext('2d');
 
-      /* All bars grow at once */
-      gsap.to(barDivs, {
-        height: barMaxH,
-        duration: 1.8,
-        ease: 'power2.inOut',
-        stagger: 0,
-        onStart: function () {
-          gsap.to(overlay, { opacity: 0, duration: 1.2, ease: 'power2.in' });
-        },
-        onComplete: function () {
-          /* Hold white, then fire hero and dissolve */
-          setTimeout(function () {
+      /* Small offscreen canvas for grain texture — regenerated each frame */
+      var grainCvs = document.createElement('canvas');
+      grainCvs.width  = 320;
+      grainCvs.height = 240;
+      var grainCtx = grainCvs.getContext('2d');
+
+      function updateGrain() {
+        var id = grainCtx.createImageData(320, 240);
+        var d  = id.data;
+        for (var n = 0; n < d.length; n += 4) {
+          var v = 40 + Math.floor(Math.random() * 180); /* grey range 40–220 */
+          d[n] = d[n+1] = d[n+2] = v;
+          d[n+3] = 255;
+        }
+        grainCtx.putImageData(id, 0, 0);
+      }
+
+      function fract(x) { return x - Math.floor(x); }
+      function shaderRandom(ax, ay) {
+        return fract(Math.sin(ax * 12.9898 + ay * 78.233) * 43758.5453);
+      }
+
+      var BUILD_MS = 2000;
+      var startT   = null;
+      var heroFired = false;
+
+      function tick(now) {
+        if (!startT) startT = now;
+        var elapsed  = now - startT;
+        var progress = Math.min(elapsed / BUILD_MS, 1);
+
+        overlay.style.opacity = String(Math.max(1 - progress * 1.6, 0));
+
+        ctx.clearRect(0, 0, cvs.width, cvs.height);
+        updateGrain();
+        ctx.imageSmoothingEnabled = false;
+
+        var SEGS      = 50;
+        var segH      = cvs.height / SEGS;
+        var timeSlot  = Math.floor(elapsed / 100);
+        var threshold = 0.98 - progress * 0.98;
+
+        for (var i = 0; i < SEGS; i++) {
+          if (shaderRandom(timeSlot, i) > threshold) {
+            var y0 = Math.floor(i * segH);
+            var bh = Math.ceil(segH) + 1;
+            /* Draw grain texture stretched into this band — chunky static look */
+            ctx.drawImage(grainCvs, 0, 0, 320, 240, 0, y0, cvs.width, bh);
+          }
+        }
+
+        if (progress >= 1) {
+          if (!heroFired) {
+            heroFired = true;
+            ctx.fillStyle = '#888';
+            ctx.fillRect(0, 0, cvs.width, cvs.height);
             glitchTl.kill();
             gsap.killTweensOf(textEls);
             clearInterval(scrambleId);
@@ -123,15 +162,26 @@
             overlay.style.display = 'none';
             window.dispatchEvent(new CustomEvent('introComplete'));
             revealHero();
-            gsap.to(barDivs, {
-              opacity: 0,
-              duration: 0.7,
-              ease: 'power2.out',
-              onComplete: function () { barDivs.forEach(function (d) { d.remove(); }); }
+            var outObj = { a: 1 };
+            gsap.to(outObj, {
+              a: 0, duration: 0.7, ease: 'power2.out',
+              onUpdate: function () {
+                ctx.clearRect(0, 0, cvs.width, cvs.height);
+                updateGrain();
+                ctx.globalAlpha = outObj.a;
+                ctx.drawImage(grainCvs, 0, 0, 320, 240, 0, 0, cvs.width, cvs.height);
+                ctx.globalAlpha = 1;
+              },
+              onComplete: function () { cvs.remove(); }
             });
-          }, 300);
+          }
+          return;
         }
-      });
+
+        requestAnimationFrame(tick);
+      }
+
+      requestAnimationFrame(tick);
     }
 
     var timer = setTimeout(glitchOut, 900);
