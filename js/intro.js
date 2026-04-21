@@ -104,9 +104,9 @@ var fragmentShader = `
   varying vec3 vPosition;
 
   void main(void) {
-    float opacity = (96.0 - length(vPosition)) / 256.0 * 0.55;
-    vec3 color = vec3(0.79, 0.52, 0.09);
-    gl_FragColor = vec4(color, opacity);
+    float opacity = (96.0 - length(vPosition)) / 256.0 * 1.1;
+    vec3 color = vec3(0.84, 0.58, 0.12);
+    gl_FragColor = vec4(color, clamp(opacity, 0.0, 1.0));
   }
 `;
 

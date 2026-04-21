@@ -54,6 +54,10 @@
      HERO REVEAL — word clip animation
   ---------------------------------------- */
   function revealHero() {
+    /* Safety: force-remove intro overlay regardless of intro.js state */
+    var introEl = document.getElementById('introOverlay');
+    if (introEl) introEl.style.display = 'none';
+
     var words   = document.querySelectorAll('.hero-title .word');
     var eyebrow = document.querySelector('.hero-eyebrow');
     var rule    = document.querySelector('.hero-rule');
