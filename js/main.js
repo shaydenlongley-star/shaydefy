@@ -50,7 +50,7 @@
       fired = true;
       if (skipBtn) gsap.to(skipBtn, { opacity: 0, duration: 0.15 });
 
-      /* --- Canvas scan bars: fixed over everything --- */
+      /* Canvas scan bars: fixed over everything */
       var cvs = document.createElement('canvas');
       cvs.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:200000;';
       cvs.width  = window.innerWidth;
@@ -58,56 +58,73 @@
       document.body.appendChild(cvs);
       var ctx = cvs.getContext('2d');
 
-      /* --- Character scramble --- */
-      var glitchChars = '!@#$%^&*()_+-=[]{}|;:,.<>?█▓▒░';
-      var textEls = Array.from(overlay.querySelectorAll('.era-h1,.era-h2,.era-logo,.era-blink,.era-location,.era-counter'));
+      /* Character scramble — every element, every tick, high corruption rate */
+      var glitchChars = '!@#$%^&*()_+-=[]{}|;:,.<>?█▓▒░▄▀■□▪▫◆◇○●';
+      var textEls = Array.from(overlay.querySelectorAll('.era-h1,.era-h2,.era-logo,.era-blink,.era-location,.era-counter,.era-btn,.era-footer-note'));
       var originals = textEls.map(function (el) { return el.textContent; });
 
       var scrambleId = setInterval(function () {
         textEls.forEach(function (el, i) {
-          if (Math.random() > 0.4) {
-            var orig = originals[i];
-            el.textContent = orig.split('').map(function (c) {
-              return Math.random() > 0.55 ? glitchChars[Math.floor(Math.random() * glitchChars.length)] : c;
-            }).join('');
-            setTimeout(function () { el.textContent = orig; }, 50 + Math.random() * 90);
-          }
+          var orig = originals[i];
+          el.textContent = orig.split('').map(function (c) {
+            return Math.random() > 0.2 ? glitchChars[Math.floor(Math.random() * glitchChars.length)] : c;
+          }).join('');
         });
-      }, 70);
+      }, 28);
 
-      /* --- RGB text shadow split --- */
-      gsap.to(textEls, { textShadow: '4px 0 #ff0000, -4px 0 #00ffff', duration: 0.09, repeat: -1, yoyo: true, ease: 'power2.inOut' });
+      /* RGB split — extreme offset */
+      gsap.to(textEls, { textShadow: '10px 0 #ff0000, -10px 0 #00ffff, 0 6px #00ff00', duration: 0.04, repeat: -1, yoyo: true, ease: 'none' });
 
-      /* --- Hue-rotate + x-shift loop on overlay (VHS glitchTl) --- */
-      var glitchTl = gsap.timeline({ repeat: -1, repeatDelay: 0.25 });
+      /* Hue-rotate + large x-shifts, no repeatDelay — continuous chaos */
+      var glitchTl = gsap.timeline({ repeat: -1, repeatDelay: 0 });
       glitchTl
-        .to(overlay, { filter: 'hue-rotate(180deg) saturate(3)', duration: 0.10 })
-        .to(overlay, { filter: 'none', duration: 0.08 })
-        .to(overlay, { x:  9, duration: 0.05 })
-        .to(overlay, { x: -9, duration: 0.05 })
-        .to(overlay, { x:  0, duration: 0.05 });
+        .to(overlay, { filter: 'hue-rotate(180deg) saturate(8) brightness(2.5)', duration: 0.05 })
+        .to(overlay, { filter: 'none', duration: 0.03 })
+        .to(overlay, { x: 28, duration: 0.03 })
+        .to(overlay, { x: -24, duration: 0.03 })
+        .to(overlay, { x: 38, duration: 0.02 })
+        .to(overlay, { x: 0,  duration: 0.04 })
+        .to(overlay, { filter: 'hue-rotate(270deg) saturate(10) invert(0.4)', duration: 0.04 })
+        .to(overlay, { filter: 'none', x: -32, duration: 0.03 })
+        .to(overlay, { x: 0,  duration: 0.04 })
+        .to(overlay, { filter: 'brightness(0.05)', duration: 0.03 })
+        .to(overlay, { filter: 'brightness(4)', duration: 0.02 })
+        .to(overlay, { filter: 'none', duration: 0.04 });
 
-      /* --- Draw scan bars at given intensity 0→1 --- */
+      /* Draw scan bars — hectic */
       function drawBars(intensity) {
         ctx.clearRect(0, 0, cvs.width, cvs.height);
-        var n = Math.floor(intensity * 45) + 2;
+        var n = Math.floor(intensity * 130) + 20;
         for (var i = 0; i < n; i++) {
-          var y  = Math.random() * cvs.height;
-          var h  = Math.random() < 0.6
-                    ? 1 + Math.random() * 2                        /* thin lines */
-                    : 4 + Math.random() * intensity * 18;          /* fat bars */
-          var rnd = Math.random();
-          var alpha = 0.55 + intensity * 0.45;
-          if      (rnd > 0.55) ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
-          else if (rnd > 0.25) ctx.fillStyle = 'rgba(255,0,0,'     + alpha + ')';
-          else                 ctx.fillStyle = 'rgba(0,255,255,'   + alpha + ')';
+          var y   = Math.random() * cvs.height;
+          var roll = Math.random();
+          var h;
+          if      (roll < 0.45) h = 1 + Math.random() * 3;
+          else if (roll < 0.75) h = 8 + Math.random() * intensity * 40;
+          else                  h = 30 + Math.random() * intensity * 100;
+          var rnd   = Math.random();
+          var alpha = 0.65 + intensity * 0.35;
+          if      (rnd > 0.52) ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
+          else if (rnd > 0.32) ctx.fillStyle = 'rgba(255,0,0,'     + alpha + ')';
+          else if (rnd > 0.12) ctx.fillStyle = 'rgba(0,255,255,'   + alpha + ')';
+          else                 ctx.fillStyle = 'rgba(0,255,0,'     + (alpha * 0.8) + ')';
           ctx.fillRect(0, y, cvs.width, h);
+        }
+        /* Full-screen colour flash */
+        if (intensity > 0.25 && Math.random() > 0.78) {
+          var fl = ['rgba(255,0,0,0.18)', 'rgba(0,255,255,0.15)', 'rgba(255,255,255,0.25)', 'rgba(0,255,0,0.12)'];
+          ctx.fillStyle = fl[Math.floor(Math.random() * fl.length)];
+          ctx.fillRect(0, 0, cvs.width, cvs.height);
+        }
+        /* Thick horizontal block displacement */
+        if (intensity > 0.15 && Math.random() > 0.55) {
+          ctx.fillStyle = 'rgba(255,255,255,' + (0.5 + intensity * 0.5) + ')';
+          ctx.fillRect(0, Math.random() * cvs.height, cvs.width, 3 + Math.random() * 20);
         }
       }
 
-      /* --- RAF loop: IN phase builds bars, OUT phase removes them --- */
-      var IN_MS   = 1600;
-      var OUT_MS  = 1100;
+      var IN_MS   = 1800;
+      var OUT_MS  = 900;
       var phase   = 'in';
       var startT  = null;
       var heroFired = false;
@@ -119,12 +136,9 @@
 
         if (phase === 'in') {
           intensity = Math.min(elapsed / IN_MS, 1);
-
-          /* Fade old site overlay as bars fill screen */
-          if (intensity > 0.55) {
-            overlay.style.opacity = String(Math.max(1 - (intensity - 0.55) / 0.45, 0));
+          if (intensity > 0.38) {
+            overlay.style.opacity = String(Math.max(1 - (intensity - 0.38) / 0.62, 0));
           }
-
           if (intensity >= 1) {
             if (!heroFired) {
               heroFired = true;
@@ -150,14 +164,14 @@
           return;
         }
 
-        if (Math.random() > 0.12) drawBars(intensity);
+        drawBars(intensity);
         requestAnimationFrame(tick);
       }
 
       requestAnimationFrame(tick);
     }
 
-    var timer = setTimeout(glitchOut, 1600);
+    var timer = setTimeout(glitchOut, 900);
     if (skipBtn) skipBtn.addEventListener('click', function () {
       clearTimeout(timer);
       glitchOut();
