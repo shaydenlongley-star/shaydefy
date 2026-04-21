@@ -36,18 +36,49 @@
   setTimeout(tryDismiss, 2200);
 
   /* ----------------------------------------
-     INTRO — fire revealHero when hills intro done
+     INTRO — old site fullscreen, glitch out
   ---------------------------------------- */
   (function () {
-    var introDone = false;
-    function onIntroComplete() {
-      if (introDone) return;
-      introDone = true;
-      revealHero();
+    var overlay  = document.getElementById('introOverlay');
+    var skipBtn  = document.getElementById('introSkip');
+    if (!overlay) { revealHero(); return; }
+
+    var fired = false;
+
+    function glitchOut() {
+      if (fired) return;
+      fired = true;
+      if (skipBtn) gsap.to(skipBtn, { opacity: 0, duration: 0.15 });
+
+      var tl = gsap.timeline();
+
+      /* Drain colour — old site dying */
+      tl.to(overlay, { filter: 'saturate(0) brightness(1.1)', duration: 0.35, ease: 'power2.in' }, 0);
+
+      /* Glitch burst */
+      tl.to(overlay, { filter: 'saturate(0) hue-rotate(90deg) brightness(2)', duration: 0.07, ease: 'none' }, 0.35);
+      tl.to(overlay, { x: -12, duration: 0.05, ease: 'none' }, 0.35);
+      tl.to(overlay, { filter: 'saturate(0) brightness(1)', x: 0, duration: 0.04, ease: 'none' }, 0.42);
+      tl.to(overlay, { filter: 'hue-rotate(200deg) saturate(6) brightness(2.5)', duration: 0.06, ease: 'none' }, 0.46);
+      tl.to(overlay, { x: 10, duration: 0.04, ease: 'none' }, 0.46);
+      tl.to(overlay, { filter: 'saturate(0) brightness(1)', x: 0, duration: 0.04, ease: 'none' }, 0.52);
+
+      /* White flash */
+      tl.to(overlay, { filter: 'brightness(12)', duration: 0.1, ease: 'power3.in' }, 0.56);
+
+      /* Fire hero, fade overlay */
+      tl.call(revealHero, null, 0.58);
+      tl.to(overlay, {
+        opacity: 0, filter: 'brightness(1)', duration: 0.3, ease: 'power2.out',
+        onComplete: function () { overlay.style.display = 'none'; }
+      }, 0.62);
     }
-    window.addEventListener('introComplete', onIntroComplete);
-    /* Hard fallback in case module fires before listener or errors */
-    setTimeout(onIntroComplete, 5000);
+
+    var timer = setTimeout(glitchOut, 1800);
+    if (skipBtn) skipBtn.addEventListener('click', function () {
+      clearTimeout(timer);
+      glitchOut();
+    });
   })();
 
   /* ----------------------------------------

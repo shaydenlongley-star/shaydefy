@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=4">
+  <link rel="stylesheet" href="css/style.css?v=5">
   <style>
     /* Critical: hide everything until preloader ready */
     body { overflow:hidden; }
@@ -29,8 +29,30 @@
 </head>
 <body>
 
-  <!-- Intro Overlay — fullscreen hills intro -->
-  <div id="introOverlay" class="intro-overlay"></div>
+  <!-- Intro Overlay — fullscreen old site -->
+  <div id="introOverlay" class="intro-overlay">
+    <div class="era-scanlines"></div>
+    <div class="era-overlay">
+      <div class="era-header">
+        <span class="era-logo">Shaydefy Web Designs</span>
+        <nav class="era-nav">
+          <a href="#">Home</a> | <a href="#">Services</a> | <a href="#">Portfolio</a> | <a href="#">Contact Us</a>
+        </nav>
+      </div>
+      <hr class="era-hr">
+      <div class="era-body">
+        <h1 class="era-h1">Welcome To Our Website!!</h1>
+        <h2 class="era-h2">Professional Web Design Services</h2>
+        <p class="era-location">Bangkok, Thailand</p>
+        <p class="era-blink">&#9733; NOW ACCEPTING NEW CLIENTS &#9733;</p>
+        <a href="#" class="era-btn" onclick="return false">Click Here To Contact Us!!</a>
+        <p class="era-counter">You are visitor number: <b>1,337</b></p>
+      </div>
+      <hr class="era-hr">
+      <div class="era-footer-note">Best viewed in Internet Explorer at 800&times;600 resolution &nbsp;&middot;&nbsp; &copy; 2009 Shaydefy. All Rights Reserved.</div>
+    </div>
+    <button id="introSkip" class="era-skip">Skip &#8594;</button>
+  </div>
 
   <!-- Page Transition Curtain -->
   <div id="pageCurtain" class="page-curtain">
@@ -413,7 +435,6 @@
   </footer>
 
   <script type="module" src="js/mesh.js"></script>
-  <script type="module" src="js/intro.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
