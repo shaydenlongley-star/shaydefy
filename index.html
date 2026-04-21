@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Shaydefy — Premium web design studio based in Bangkok. Cinematic, high-performance websites for businesses that refuse to be ordinary.">
+  <title>Shaydefy — Premium Web Design Studio · Bangkok</title>
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Shaydefy">
+  <meta property="og:title" content="Shaydefy — Premium Web Design Studio · Bangkok">
+  <meta property="og:description" content="We build cinematic, high-performance websites for businesses that refuse to be ordinary.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=2">
+  <style>
+    /* Critical: hide everything until preloader ready */
+    body { overflow:hidden; }
+    @media(max-width:900px){
+      .nav-menu{display:flex!important;position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;background:#080808!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:8px!important;padding:40px 28px!important;z-index:9999!important;opacity:0!important;transform:translateX(100%)!important;pointer-events:none!important;transition:opacity .35s ease,transform .35s cubic-bezier(.4,0,.2,1)!important}
+      .nav-menu.open{opacity:1!important;transform:translateX(0)!important;pointer-events:all!important}
+      .nav-toggle{display:flex!important;z-index:10000!important}
+      .nav-menu a{font-size:1.25rem!important;padding:16px 32px!important;font-weight:500!important;color:rgba(255,255,255,0.75)!important;width:100%!important;text-align:center!important;display:block!important}
+      .work-grid{grid-template-columns:1fr!important}
+      .about-split{grid-template-columns:1fr!important;gap:48px!important}
+    }
+    html,body{overflow-x:hidden!important}
+  </style>
+</head>
+<body>
+
+  <!-- Intro Overlay — fullscreen hills intro -->
+  <div id="introOverlay" class="intro-overlay"></div>
+
+  <!-- Page Transition Curtain -->
+  <div id="pageCurtain" class="page-curtain">
+    <div class="curtain-panel"></div>
+    <div class="curtain-panel"></div>
+    <div class="curtain-panel"></div>
+    <div class="curtain-panel"></div>
+    <div class="curtain-panel"></div>
+  </div>
+
+
+  <!-- Section Indicator -->
+  <div class="section-indicator" id="sectionIndicator" aria-hidden="true">
+    <span class="section-indicator-num" id="sectionNum">01</span>
+    <span class="section-indicator-line"></span>
+    <span class="section-indicator-label" id="sectionLabel">Home</span>
+  </div>
+
+  <!-- Cursor Preview -->
+  <div class="cursor-preview" id="cursorPreview" aria-hidden="true">
+    <div class="cursor-preview-img" id="cursorPreviewImg"></div>
+  </div>
+
+  <!-- Preloader -->
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <span class="preloader-wordmark">
+      <span class="pl-char">S</span><span class="pl-char">H</span><span class="pl-char">A</span><span class="pl-char">Y</span><span class="pl-char">D</span><span class="pl-char">E</span><span class="pl-char">F</span><span class="pl-char">Y</span>
+    </span>
+    <div class="preloader-track"><div class="preloader-fill" id="preloaderFill"></div></div>
+  </div>
+
+  <!-- Scroll Progress -->
+  <div class="scroll-progress" id="scrollProgress"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <div class="container nav-inner">
+      <a href="#home" class="nav-logo">SHAYDEFY</a>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="#work">Work</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact" class="nav-cta">Get in Touch</a></li>
+      </ul>
+      <button class="nav-toggle" id="navToggle" aria-label="Menu">
+        <span class="burger" id="burger"></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ================================================
+       HERO
+  ================================================= -->
+  <section class="hero" id="home" data-section-label="Home" data-section-num="01">
+    <div id="heroMeshContainer" class="hero-mesh" aria-hidden="true">
+    </div>
+    <div class="hero-grain"></div>
+    <div class="hero-glow"></div>
+
+    <div class="container hero-container">
+
+      <!-- Left: Main content -->
+      <div class="hero-content">
+        <p class="hero-eyebrow" data-reveal>Bangkok &nbsp;·&nbsp; Web Design Studio</p>
+        <div class="hero-rule" data-reveal></div>
+
+        <h1 class="hero-title" id="heroTitle" data-reveal data-reveal-delay="1">
+          <span class="hero-title-line"><span class="word-wrap"><span class="word">SHAY</span></span><span class="word-wrap"><span class="word">DEFY</span></span></span>
+        </h1>
+
+        <p class="hero-sub" id="heroSub" data-reveal data-reveal-delay="2"></p>
+
+        <div class="hero-actions" data-reveal data-reveal-delay="3">
+          <a href="#work" class="btn btn-gold" data-magnetic>View Work</a>
+          <a href="#contact" class="btn btn-ghost" data-magnetic>Start a Project &nbsp;↗</a>
+        </div>
+      </div>
+
+      <!-- Right: Featured stat/badge -->
+      <div class="hero-aside" data-reveal data-reveal-delay="4">
+        <div class="hero-badge">
+          <span class="hero-badge-num" data-count="10" data-suffix="+">10+</span>
+          <span class="hero-badge-label">Projects<br>Delivered</span>
+        </div>
+        <div class="hero-badge">
+          <span class="hero-badge-num">BKK</span>
+          <span class="hero-badge-label">Based in<br>Bangkok</span>
+        </div>
+        <div class="hero-badge">
+          <span class="hero-badge-num" data-count="100" data-suffix="%">100%</span>
+          <span class="hero-badge-label">Custom<br>Builds</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="hero-scroll-hint">
+      <span class="hero-scroll-line"></span>
+      <span class="hero-scroll-text">Scroll</span>
+    </div>
+  </section>
+
+  <!-- ================================================
+       MARQUEE
+  ================================================= -->
+  <div class="marquee-section" aria-hidden="true">
+    <div class="marquee-inner">
+      <div class="marquee-group">
+        <span class="marquee-item">Siam Legal</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item marquee-manifesto">Every pixel has a purpose</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item">Bangkok Elites</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item marquee-manifesto">Built from scratch. No exceptions.</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item">Praesidia Alliance</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item marquee-manifesto">Performance is non-negotiable</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item">PFIL Group</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item marquee-manifesto">No templates. No shortcuts.</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item">Tradefarm</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item marquee-manifesto">Your brand deserves better</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item">Ben's Bookkeeping</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item marquee-manifesto">Craft over everything</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item">Headbang Barber</span><span class="marquee-sep">◆</span>
+      </div>
+      <div class="marquee-group">
+        <span class="marquee-item">Siam Legal</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item marquee-manifesto">Every pixel has a purpose</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item">Bangkok Elites</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item marquee-manifesto">Built from scratch. No exceptions.</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item">Praesidia Alliance</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item marquee-manifesto">Performance is non-negotiable</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item">PFIL Group</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item marquee-manifesto">No templates. No shortcuts.</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item">Tradefarm</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item marquee-manifesto">Your brand deserves better</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item">Ben's Bookkeeping</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item marquee-manifesto">Craft over everything</span><span class="marquee-sep">◆</span>
+        <span class="marquee-item">Headbang Barber</span><span class="marquee-sep">◆</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+       SERVICES
+  ================================================= -->
+  <section class="services-section section" id="services" data-section-label="Services" data-section-num="02">
+    <div class="container">
+      <div class="services-header">
+        <span class="eyebrow" data-reveal>What We Build</span>
+        <h2 data-reveal data-reveal-delay="1">Three disciplines.<br><em>One studio.</em></h2>
+      </div>
+      <div class="services-grid">
+        <div class="service-card" data-reveal>
+          <span class="service-num">01</span>
+          <h3>Web Design</h3>
+          <p>Cinematic, scroll-driven websites built entirely from scratch. No templates, no page builders, no compromise.</p>
+        </div>
+        <div class="service-card" data-reveal data-reveal-delay="1">
+          <span class="service-num">02</span>
+          <h3>Development</h3>
+          <p>Clean, performant HTML/CSS/JS. Every line written with purpose — fast, accessible, and built to last.</p>
+        </div>
+        <div class="service-card" data-reveal data-reveal-delay="2">
+          <span class="service-num">03</span>
+          <h3>Brand Identity</h3>
+          <p>Naming, visual direction, and complete digital presence — from zero to unforgettable.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       WORK
+  ================================================= -->
+  <section class="section" id="work" data-section-label="Work" data-section-num="03">
+    <div class="container">
+
+      <div class="work-header" data-reveal>
+        <div>
+          <span class="eyebrow">Selected Work</span>
+          <h2>Built to be remembered.</h2>
+        </div>
+        <span class="work-count">01 — 07</span>
+      </div>
+
+      <!-- FEATURED -->
+      <a href="siam-legal/index.html" class="work-featured" data-reveal>
+        <div class="work-featured-img" style="background-image:url('home page ss/siam-legal.png')"></div>
+        <div class="work-featured-overlay"></div>
+        <div class="work-featured-body">
+          <div>
+            <span class="work-num">01</span>
+            <span class="work-tag">Legal &amp; Immigration</span>
+            <h3>Siam Legal International</h3>
+            <p>Cinematic redesign for Bangkok's leading international law firm — scroll-driven narrative, GSAP animations, full rebrand.</p>
+          </div>
+          <span class="work-arrow">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 15L15 3M15 3H6M15 3V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </div>
+      </a>
+
+      <!-- GRID -->
+      <div class="work-grid">
+
+        <a href="bangkokelites/index.html" class="work-card" data-reveal data-preview="home page ss/bangkok-elites.png">
+          <div class="work-card-img" style="background-image:url('home page ss/bangkok-elites.png')"></div>
+          <div class="work-card-overlay"></div>
+          <div class="work-card-body">
+            <span class="work-num">02</span>
+            <span class="work-tag">Luxury Lifestyle</span>
+            <h3>Bangkok Elites</h3>
+            <span class="work-link">View Project &nbsp;↗</span>
+          </div>
+        </a>
+
+        <a href="praesidia-website/index.html" class="work-card" data-reveal data-preview="home page ss/praesidia.png">
+          <div class="work-card-img" style="background-image:url('home page ss/praesidia.png')"></div>
+          <div class="work-card-overlay"></div>
+          <div class="work-card-body">
+            <span class="work-num">03</span>
+            <span class="work-tag">International Organisation</span>
+            <h3>Praesidia Alliance</h3>
+            <span class="work-link">View Project &nbsp;↗</span>
+          </div>
+        </a>
+
+        <a href="pfil-website/index.html" class="work-card" data-reveal data-preview="home page ss/pfil.png">
+          <div class="work-card-img" style="background-image:url('home page ss/pfil.png')"></div>
+          <div class="work-card-overlay"></div>
+          <div class="work-card-body">
+            <span class="work-num">04</span>
+            <span class="work-tag">Professional Services</span>
+            <h3>PFIL Group</h3>
+            <span class="work-link">View Project &nbsp;↗</span>
+          </div>
+        </a>
+
+        <a href="tradefarm-website/index.html" class="work-card" data-reveal data-preview="home page ss/tradefarm.png">
+          <div class="work-card-img" style="background-image:url('home page ss/tradefarm.png')"></div>
+          <div class="work-card-overlay"></div>
+          <div class="work-card-body">
+            <span class="work-num">05</span>
+            <span class="work-tag">Agricultural Commerce</span>
+            <h3>Tradefarm</h3>
+            <span class="work-link">View Project &nbsp;↗</span>
+          </div>
+        </a>
+
+        <a href="bens-bookkeeping/index.html" class="work-card" data-reveal data-preview="home page ss/bens-bookkeeping.png">
+          <div class="work-card-img" style="background-image:url('home page ss/bens-bookkeeping.png')"></div>
+          <div class="work-card-overlay"></div>
+          <div class="work-card-body">
+            <span class="work-num">06</span>
+            <span class="work-tag">Financial Services</span>
+            <h3>Ben's Bookkeeping</h3>
+            <span class="work-link">View Project &nbsp;↗</span>
+          </div>
+        </a>
+
+        <a href="headbangbarber/index.html" class="work-card" data-reveal data-preview="home page ss/headbang-barber.png">
+          <div class="work-card-img" style="background-image:url('home page ss/headbang-barber.png')"></div>
+          <div class="work-card-overlay"></div>
+          <div class="work-card-body">
+            <span class="work-num">07</span>
+            <span class="work-tag">Grooming &amp; Lifestyle</span>
+            <h3>Headbang Barber</h3>
+            <span class="work-link">View Project &nbsp;↗</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       PROCESS — Orbital Timeline
+  ================================================= -->
+  <section class="orbital-section section" id="process">
+    <div class="orbital-eyebrow-wrap container">
+      <span class="eyebrow" data-reveal>How It Works</span>
+      <p class="orbital-hint">Click any node to explore</p>
+    </div>
+    <div class="orbital-stage" id="orbitalStage">
+      <!-- Centre orb -->
+      <div class="orbital-center" id="orbitalCenter">
+        <div class="orbital-center-ping"></div>
+        <div class="orbital-center-ping" style="animation-delay:0.5s"></div>
+        <div class="orbital-center-dot"></div>
+      </div>
+      <!-- Orbit ring -->
+      <div class="orbital-ring"></div>
+      <!-- Nodes injected by JS -->
+    </div>
+  </section>
+
+  <!-- ================================================
+       ABOUT
+  ================================================= -->
+  <section class="section about-section" id="about" data-section-label="About" data-section-num="04">
+    <div class="container">
+      <div class="about-split">
+        <div class="about-left" data-reveal>
+          <span class="eyebrow">About</span>
+          <h2>Craft over<br><em>everything.</em></h2>
+          <div class="gold-rule"></div>
+          <p>I'm a Bangkok-based web designer building premium, cinematic websites for businesses that take their digital presence seriously. Every site is custom-crafted — no templates, no shortcuts, no compromise.</p>
+          <p>I work with professional service firms, luxury brands, and ambitious businesses across Southeast Asia and beyond.</p>
+          <a href="#contact" class="btn btn-gold" style="margin-top:12px">Start a Project</a>
+        </div>
+        <div class="about-right" data-reveal data-reveal-delay="2">
+          <div class="about-card">
+            <span class="about-card-num" data-count="10" data-suffix="+">10+</span>
+            <span class="about-card-label">Projects Completed</span>
+          </div>
+          <div class="about-card">
+            <span class="about-card-num" data-count="100" data-suffix="%">100%</span>
+            <span class="about-card-label">Custom — No Templates</span>
+          </div>
+          <div class="about-card">
+            <span class="about-card-num">BKK</span>
+            <span class="about-card-label">Based in Bangkok, Thailand</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       CONTACT
+  ================================================= -->
+  <section class="contact-section" id="contact" data-section-label="Contact" data-section-num="05">
+    <div class="container contact-inner">
+      <span class="eyebrow" data-reveal>Get in Touch</span>
+      <h2 data-reveal data-reveal-delay="1">Let's build something<br><em>remarkable.</em></h2>
+      <div class="contact-form-wrap" data-reveal data-reveal-delay="2">
+        <!-- Replace YOUR_FORM_ID with your Formspree form ID: formspree.io/new -->
+        <form class="contact-form" id="contactForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+          <div class="form-row">
+            <div class="form-field">
+              <label for="cf-name">Name</label>
+              <input id="cf-name" type="text" name="name" required placeholder="Your name">
+            </div>
+            <div class="form-field">
+              <label for="cf-email">Email</label>
+              <input id="cf-email" type="email" name="email" required placeholder="your@email.com">
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="cf-message">Project Brief</label>
+            <textarea id="cf-message" name="message" rows="5" required placeholder="Tell me about your project — what you do, what you need, and when you need it."></textarea>
+          </div>
+          <button type="submit" class="btn btn-gold" data-magnetic>Send Message</button>
+        </form>
+        <div class="contact-success" id="contactSuccess">
+          <span class="contact-check">✓</span>
+          <p>Message received. I'll be in touch within one business day.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="closing-section section" id="footerRevealClip">
+    <div class="container closing-inner">
+      <span class="eyebrow" data-reveal>Ready when you are</span>
+      <h2 data-reveal data-reveal-delay="1">Let's build something<br>the world <em>remembers.</em></h2>
+      <div data-reveal data-reveal-delay="2">
+        <a href="#contact" class="btn btn-gold" data-magnetic>Start a Project &nbsp;↗</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span class="footer-logo">SHAYDEFY</span>
+      <span class="footer-copy">&copy; <span id="year"></span> Shaydefy. Bangkok, Thailand.</span>
+      <ul class="footer-links">
+        <li><a href="#work">Work</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script type="module" src="js/mesh.js"></script>
+  <script type="module" src="js/intro.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="js/main.js?v=4"></script>
+</body>
+</html>
