@@ -50,38 +50,74 @@
       fired = true;
       if (skipBtn) gsap.to(skipBtn, { opacity: 0, duration: 0.15 });
 
+      /* --- Character scramble on all text (from VHS component) --- */
+      var glitchChars = '!@#$%^&*()_+-=[]{}|;:,.<>?█▓▒░';
+      var textEls = Array.from(overlay.querySelectorAll('.era-h1,.era-h2,.era-logo,.era-blink,.era-location,.era-counter'));
+      var originals = textEls.map(function (el) { return el.textContent; });
+
+      var scrambleId = setInterval(function () {
+        textEls.forEach(function (el, i) {
+          if (Math.random() > 0.45) {
+            var orig = originals[i];
+            el.textContent = orig.split('').map(function (c) {
+              return Math.random() > 0.6 ? glitchChars[Math.floor(Math.random() * glitchChars.length)] : c;
+            }).join('');
+            setTimeout(function () { el.textContent = orig; }, 50 + Math.random() * 90);
+          }
+        });
+      }, 75);
+
+      /* --- RGB text shadow split (from VHS component) --- */
+      gsap.to(textEls, {
+        textShadow: '3px 0 #ff0000, -3px 0 #00ffff',
+        duration: 0.08,
+        repeat: -1,
+        yoyo: true,
+        ease: 'power2.inOut'
+      });
+
+      /* --- Overlay glitch pattern (from VHS glitchTl, escalating x4) --- */
       var tl = gsap.timeline();
 
-      /* Hit 1 — subtle flicker, old site still recognisable */
-      tl.to(overlay, { filter: 'hue-rotate(55deg) saturate(3) brightness(1.3)', duration: 0.07, ease: 'none' }, 0);
-      tl.to(overlay, { x: -7, duration: 0.05, ease: 'none' }, 0);
-      tl.to(overlay, { filter: 'none', x: 0, duration: 0.05, ease: 'none' }, 0.07);
+      /* Pass 1 — subtle, old site still readable */
+      tl.to(overlay, { filter: 'hue-rotate(180deg) saturate(2)', duration: 0.10 }, 0.00)
+        .to(overlay, { filter: 'none', duration: 0.10 }, 0.10)
+        .to(overlay, { x:  5, duration: 0.05 }, 0.20)
+        .to(overlay, { x: -5, duration: 0.05 }, 0.25)
+        .to(overlay, { x:  0, duration: 0.05 }, 0.30);
 
-      /* Hit 2 — stronger, monochrome snap */
-      tl.to(overlay, { filter: 'saturate(0) brightness(1.9) contrast(1.8)', duration: 0.07, ease: 'none' }, 0.28);
-      tl.to(overlay, { x: 13, duration: 0.05, ease: 'none' }, 0.28);
-      tl.to(overlay, { filter: 'none', x: 0, duration: 0.06, ease: 'none' }, 0.35);
+      /* Pass 2 — stronger */
+      tl.to(overlay, { filter: 'hue-rotate(180deg) saturate(4)', duration: 0.10 }, 0.45)
+        .to(overlay, { filter: 'none', duration: 0.08 }, 0.55)
+        .to(overlay, { x:  14, duration: 0.05 }, 0.63)
+        .to(overlay, { x: -14, duration: 0.05 }, 0.68)
+        .to(overlay, { x:   0, duration: 0.05 }, 0.73);
 
-      /* Hit 3 — full colour corruption */
-      tl.to(overlay, { filter: 'hue-rotate(180deg) saturate(6) brightness(2)', duration: 0.06, ease: 'none' }, 0.52);
-      tl.to(overlay, { x: -18, duration: 0.04, ease: 'none' }, 0.52);
-      tl.to(overlay, { filter: 'saturate(0) brightness(0.3)', x: 18, duration: 0.04, ease: 'none' }, 0.58);
-      tl.to(overlay, { filter: 'hue-rotate(280deg) saturate(9) brightness(2.8)', x: -8, duration: 0.04, ease: 'none' }, 0.62);
-      tl.to(overlay, { filter: 'none', x: 0, duration: 0.03, ease: 'none' }, 0.66);
+      /* Pass 3 — colour inversion, tearing */
+      tl.to(overlay, { filter: 'hue-rotate(180deg) saturate(6) invert(0.6)', duration: 0.08 }, 0.88)
+        .to(overlay, { filter: 'saturate(0) brightness(2)', duration: 0.06 }, 0.96)
+        .to(overlay, { filter: 'none', duration: 0.05 }, 1.02)
+        .to(overlay, { x:  22, duration: 0.04 }, 1.07)
+        .to(overlay, { x: -22, duration: 0.04 }, 1.11)
+        .to(overlay, { x:   0, duration: 0.04 }, 1.15);
 
-      /* Hit 4 — rapid-fire breakdown */
-      tl.to(overlay, { filter: 'hue-rotate(100deg) saturate(12) brightness(3.5)', x: 12, duration: 0.04, ease: 'none' }, 0.75);
-      tl.to(overlay, { filter: 'saturate(0) brightness(0.1)', x: -12, duration: 0.03, ease: 'none' }, 0.79);
+      /* Pass 4 — full breakdown */
+      tl.to(overlay, { filter: 'hue-rotate(180deg) saturate(8) contrast(3)', duration: 0.06 }, 1.22)
+        .to(overlay, { filter: 'saturate(0) brightness(0.2)', x: -30, duration: 0.04 }, 1.28)
+        .to(overlay, { filter: 'invert(1) contrast(5)', x: 30, duration: 0.04 }, 1.32)
+        .to(overlay, { filter: 'brightness(16)', x: 0, duration: 0.10, ease: 'power3.in' }, 1.36);
 
-      /* White flash — old site dies */
-      tl.to(overlay, { filter: 'brightness(16)', x: 0, duration: 0.09, ease: 'power3.in' }, 0.82);
-
-      /* Hero fires mid-flash, overlay fades */
-      tl.call(revealHero, null, 0.86);
+      /* Clean up scramble, fire hero, fade overlay */
+      tl.call(function () {
+        clearInterval(scrambleId);
+        gsap.killTweensOf(textEls);
+        textEls.forEach(function (el, i) { el.textContent = originals[i]; });
+      }, null, 1.40);
+      tl.call(revealHero, null, 1.40);
       tl.to(overlay, {
         opacity: 0, filter: 'brightness(1)', duration: 0.32, ease: 'power2.out',
         onComplete: function () { overlay.style.display = 'none'; }
-      }, 0.88);
+      }, 1.42);
     }
 
     var timer = setTimeout(glitchOut, 1800);
