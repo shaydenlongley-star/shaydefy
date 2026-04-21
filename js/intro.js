@@ -10,7 +10,7 @@ var canvas = document.createElement('canvas');
 canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;';
 overlay.appendChild(canvas);
 
-var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: false, alpha: true });
+var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: false, alpha: false });
 var scene    = new THREE.Scene();
 var camera   = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
 var clock    = new THREE.Clock();
@@ -104,8 +104,8 @@ var fragmentShader = `
   varying vec3 vPosition;
 
   void main(void) {
-    float opacity = (96.0 - length(vPosition)) / 256.0 * 1.1;
-    vec3 color = vec3(0.84, 0.58, 0.12);
+    float opacity = (96.0 - length(vPosition)) / 256.0 * 0.75;
+    vec3 color = vec3(0.79, 0.52, 0.09);
     gl_FragColor = vec4(color, clamp(opacity, 0.0, 1.0));
   }
 `;
@@ -120,7 +120,7 @@ scene.add(mesh);
 camera.position.set(0, 16, 125);
 camera.lookAt(new THREE.Vector3(0, 28, 0));
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x000000, 0);
+renderer.setClearColor(0x080808, 1);
 
 function resize() {
   camera.aspect = window.innerWidth / window.innerHeight;
