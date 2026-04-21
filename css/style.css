@@ -1225,22 +1225,22 @@ img { max-width:100%; display:block; }
 }
 
 .era-overlay {
-  position:absolute; inset:0;
-  background:#f0ede8; color:#111;
+  position:absolute; inset:0; z-index:1;
+  background:transparent; color:#fff;
   font-family:'Times New Roman', Times, serif;
   overflow:hidden;
   display:flex; flex-direction:column; align-items:center;
-  filter:sepia(0.1) brightness(0.95);
 }
 
 .era-header {
-  width:100%; background:#000080; padding:14px 24px;
+  width:100%; background:rgba(0,0,128,0.7); padding:14px 24px;
   display:flex; justify-content:space-between; align-items:center;
   flex-wrap:wrap; gap:8px;
 }
 .era-logo {
   font-family:'Comic Sans MS','Chalkboard SE',cursive;
   font-size:clamp(1.1rem,3vw,1.5rem); color:#ffff00; font-weight:bold;
+  text-shadow:2px 0 #ff0000, -2px 0 #00ffff;
 }
 .era-nav { display:flex; gap:0; align-items:center; }
 .era-nav a {
@@ -1248,7 +1248,7 @@ img { max-width:100%; display:block; }
   font-family:'Times New Roman',serif; padding:0 5px;
 }
 .era-nav a:hover { color:#fff; }
-.era-hr { width:100%; border:none; border-top:3px groove #999; margin:0; }
+.era-hr { width:100%; border:none; border-top:3px groove rgba(255,255,255,0.4); margin:0; }
 .era-body {
   flex:1; display:flex; flex-direction:column;
   align-items:center; justify-content:center;
@@ -1256,31 +1256,33 @@ img { max-width:100%; display:block; }
 }
 .era-h1 {
   font-family:'Comic Sans MS','Chalkboard SE',cursive;
-  font-size:clamp(2rem,6vw,3.8rem); color:#8b0000; margin:0;
+  font-size:clamp(2rem,6vw,3.8rem); color:#ffffff; margin:0;
+  text-shadow:2px 0 #ff0000, -2px 0 #00ffff, 0 0 20px rgba(255,255,255,0.5);
 }
 .era-h2 {
   font-family:'Times New Roman',serif;
-  font-size:clamp(1.1rem,3vw,1.8rem); color:#000080;
+  font-size:clamp(1.1rem,3vw,1.8rem); color:#00ffff;
   font-weight:normal; margin:0;
 }
-.era-location { font-size:1rem; color:#555; margin:0; }
+.era-location { font-size:1rem; color:rgba(255,255,255,0.75); margin:0; }
 .era-blink {
   color:#ff6600; font-weight:bold; font-size:1rem;
   animation:eraBlink 1s step-end infinite;
+  text-shadow:0 0 8px rgba(255,102,0,0.8);
 }
 @keyframes eraBlink { 50% { opacity:0; } }
 .era-btn {
   display:inline-block;
-  background:#c0c0c0; color:#000;
-  border:2px outset #fff;
+  background:rgba(192,192,192,0.2); color:#fff;
+  border:2px outset rgba(255,255,255,0.6);
   padding:9px 24px;
   font-family:'Times New Roman',serif; font-size:1rem;
   text-decoration:none; cursor:pointer;
 }
-.era-btn:hover { background:#d0d0d0; }
-.era-counter { font-size:0.8rem; color:#666; margin:0; }
+.era-btn:hover { background:rgba(255,255,255,0.3); }
+.era-counter { font-size:0.8rem; color:rgba(255,255,255,0.6); margin:0; }
 .era-footer-note {
-  width:100%; background:#000080; color:#aaa;
+  width:100%; background:rgba(0,0,128,0.7); color:#aaa;
   font-size:0.7rem; text-align:center; padding:8px;
   font-family:'Times New Roman',serif;
 }
