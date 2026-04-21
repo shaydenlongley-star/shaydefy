@@ -97,63 +97,60 @@
       document.body.appendChild(cvs);
       var ctx = cvs.getContext('2d');
 
-      /* 8 bars at fixed positions — grow simultaneously, cover screen, hold, then dissolve */
-      var NUM_BARS = 8;
+      /* 8 bars evenly spaced — GSAP-driven so timing is exact */
+      var NUM_BARS   = 8;
       var barCentres = [];
       for (var b = 0; b < NUM_BARS; b++) {
         barCentres.push((b + 0.5) / NUM_BARS * cvs.height);
       }
       var maxBarH = (cvs.height / NUM_BARS) * 2.6;
 
-      var GROW_MS = 1800;
-      var HOLD_MS = 300;
-      var OUT_MS  = 700;
-      var phase   = 'grow';
-      var startT  = null;
-      var heroFired = false;
+      var growObj = { p: 0 };
 
-      function tick(now) {
-        if (!startT) startT = now;
-        var elapsed = now - startT;
-        ctx.clearRect(0, 0, cvs.width, cvs.height);
-
-        if (phase === 'grow') {
-          var p = Math.min(elapsed / GROW_MS, 1);
-          overlay.style.opacity = String(Math.max(1 - p * 1.5, 0));
-          ctx.fillStyle = 'rgba(255,252,248,' + (0.75 + p * 0.25).toFixed(2) + ')';
+      gsap.to(growObj, {
+        p: 1,
+        duration: 1.8,
+        ease: 'power2.inOut',
+        onUpdate: function () {
+          var p = growObj.p;
+          ctx.clearRect(0, 0, cvs.width, cvs.height);
+          overlay.style.opacity = String(Math.max(1 - p * 1.6, 0));
+          ctx.fillStyle = 'white';
           barCentres.forEach(function (cy) {
             ctx.fillRect(0, cy - (maxBarH * p) / 2, cvs.width, maxBarH * p);
           });
-          if (p >= 1) { phase = 'hold'; startT = now; }
-
-        } else if (phase === 'hold') {
-          ctx.fillStyle = 'rgba(255,252,248,1)';
+        },
+        onComplete: function () {
+          /* Screen fully white — hold briefly */
+          ctx.fillStyle = 'white';
           ctx.fillRect(0, 0, cvs.width, cvs.height);
-          if (elapsed >= HOLD_MS) {
-            if (!heroFired) {
-              heroFired = true;
-              glitchTl.kill();
-              gsap.killTweensOf(textEls);
-              clearInterval(scrambleId);
-              gsap.set(overlay, { clearProps: 'all' });
-              overlay.style.display = 'none';
-              window.dispatchEvent(new CustomEvent('introComplete'));
-              revealHero();
-            }
-            phase = 'out'; startT = now;
-          }
 
-        } else {
-          var outP = Math.min(elapsed / OUT_MS, 1);
-          ctx.fillStyle = 'rgba(255,252,248,' + (1 - outP).toFixed(3) + ')';
-          ctx.fillRect(0, 0, cvs.width, cvs.height);
-          if (outP >= 1) { cvs.remove(); return; }
+          setTimeout(function () {
+            /* Fire hero behind the white */
+            glitchTl.kill();
+            gsap.killTweensOf(textEls);
+            clearInterval(scrambleId);
+            gsap.set(overlay, { clearProps: 'all' });
+            overlay.style.display = 'none';
+            window.dispatchEvent(new CustomEvent('introComplete'));
+            revealHero();
+
+            /* Dissolve white off real site */
+            var outObj = { a: 1 };
+            gsap.to(outObj, {
+              a: 0,
+              duration: 0.7,
+              ease: 'power2.out',
+              onUpdate: function () {
+                ctx.clearRect(0, 0, cvs.width, cvs.height);
+                ctx.fillStyle = 'rgba(255,255,255,' + outObj.a.toFixed(3) + ')';
+                ctx.fillRect(0, 0, cvs.width, cvs.height);
+              },
+              onComplete: function () { cvs.remove(); }
+            });
+          }, 300);
         }
-
-        requestAnimationFrame(tick);
-      }
-
-      requestAnimationFrame(tick);
+      });
     }
 
     var timer = setTimeout(glitchOut, 900);
