@@ -89,21 +89,67 @@
         .to(overlay, { x: -5, duration: 0.05 })
         .to(overlay, { x:  0, duration: 0.05 });
 
-      /* Fade out and transition after 3.5s */
-      gsap.delayedCall(3.5, function () {
-        glitchTl.kill();
-        gsap.killTweensOf(textEls);
-        clearInterval(scrambleId);
-        gsap.to(overlay, {
-          opacity: 0, duration: 0.5, ease: 'power2.in',
-          onComplete: function () {
-            gsap.set(overlay, { clearProps: 'all' });
-            overlay.style.display = 'none';
-            window.dispatchEvent(new CustomEvent('introComplete'));
-            revealHero();
+      /* Canvas: thick white VHS tracking bars build up and take over */
+      var cvs = document.createElement('canvas');
+      cvs.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:200000;';
+      cvs.width  = window.innerWidth;
+      cvs.height = window.innerHeight;
+      document.body.appendChild(cvs);
+      var ctx = cvs.getContext('2d');
+
+      var BUILD_MS = 2200;
+      var OUT_MS   = 900;
+      var phase    = 'in';
+      var startT   = null;
+      var heroFired = false;
+
+      function drawBars(intensity) {
+        ctx.clearRect(0, 0, cvs.width, cvs.height);
+        var n = Math.floor(3 + intensity * 10);
+        for (var i = 0; i < n; i++) {
+          var y  = Math.random() * cvs.height;
+          var h  = 20 + Math.random() * (30 + intensity * 120);
+          ctx.fillStyle = 'rgba(255,252,248,' + (0.6 + intensity * 0.4).toFixed(2) + ')';
+          ctx.fillRect(0, y, cvs.width, h);
+        }
+      }
+
+      function tick(now) {
+        if (!startT) startT = now;
+        var elapsed   = now - startT;
+        var intensity, done;
+
+        if (phase === 'in') {
+          intensity = Math.min(elapsed / BUILD_MS, 1);
+          if (intensity > 0.45) {
+            overlay.style.opacity = String(Math.max(1 - (intensity - 0.45) / 0.55, 0));
           }
-        });
-      });
+          if (intensity >= 1) {
+            if (!heroFired) {
+              heroFired = true;
+              glitchTl.kill();
+              gsap.killTweensOf(textEls);
+              clearInterval(scrambleId);
+              gsap.set(overlay, { clearProps: 'all' });
+              overlay.style.display = 'none';
+              window.dispatchEvent(new CustomEvent('introComplete'));
+              revealHero();
+            }
+            phase  = 'out';
+            startT = now;
+          }
+          done = false;
+        } else {
+          intensity = Math.max(1 - elapsed / OUT_MS, 0);
+          done = (intensity <= 0);
+        }
+
+        if (done) { ctx.clearRect(0, 0, cvs.width, cvs.height); cvs.remove(); return; }
+        drawBars(intensity);
+        requestAnimationFrame(tick);
+      }
+
+      requestAnimationFrame(tick);
     }
 
     var timer = setTimeout(glitchOut, 900);
