@@ -103,15 +103,23 @@
       var startT   = null;
       var heroFired = false;
 
+      /* Pre-generate fixed bar positions that tile the full screen */
+      var NUM_BARS = 10;
+      var bars = [];
+      for (var b = 0; b < NUM_BARS; b++) {
+        bars.push({
+          cy: (b + 0.5) / NUM_BARS * cvs.height + (Math.random() - 0.5) * 20,
+          maxH: (cvs.height / NUM_BARS) * 2.2
+        });
+      }
+
       function drawBars(intensity) {
         ctx.clearRect(0, 0, cvs.width, cvs.height);
-        var n = Math.floor(3 + intensity * 10);
-        for (var i = 0; i < n; i++) {
-          var y  = Math.random() * cvs.height;
-          var h  = 20 + Math.random() * (30 + intensity * 120);
-          ctx.fillStyle = 'rgba(255,252,248,' + (0.6 + intensity * 0.4).toFixed(2) + ')';
-          ctx.fillRect(0, y, cvs.width, h);
-        }
+        ctx.fillStyle = 'rgba(255,252,248,' + (0.75 + intensity * 0.25).toFixed(2) + ')';
+        bars.forEach(function (bar) {
+          var h = bar.maxH * intensity;
+          ctx.fillRect(0, bar.cy - h / 2, cvs.width, h);
+        });
       }
 
       function tick(now) {
