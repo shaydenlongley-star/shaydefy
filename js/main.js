@@ -97,51 +97,39 @@
       document.body.appendChild(cvs);
       var ctx = cvs.getContext('2d');
 
-      var BUILD_MS = 2200;
-      var OUT_MS   = 900;
-      var phase    = 'in';
-      var startT   = null;
-      var heroFired = false;
-
-      /* Fixed bars — evenly spaced, grow in place, no flicker */
+      /* 8 bars at fixed positions — grow simultaneously, cover screen, hold, then dissolve */
       var NUM_BARS = 8;
-      var bars = [];
+      var barCentres = [];
       for (var b = 0; b < NUM_BARS; b++) {
-        bars.push((b + 0.5) / NUM_BARS * cvs.height);
+        barCentres.push((b + 0.5) / NUM_BARS * cvs.height);
       }
-      var maxBarH = (cvs.height / NUM_BARS) * 2.4;
+      var maxBarH = (cvs.height / NUM_BARS) * 2.6;
 
-      function drawBars(intensity) {
-        ctx.clearRect(0, 0, cvs.width, cvs.height);
-
-        if (intensity >= 0.85) {
-          /* Snap to solid white */
-          var wAlpha = (intensity - 0.85) / 0.15;
-          ctx.fillStyle = 'rgba(255,252,248,' + wAlpha.toFixed(3) + ')';
-          ctx.fillRect(0, 0, cvs.width, cvs.height);
-          return;
-        }
-
-        /* Bars grow simultaneously from their fixed centres */
-        var growI = intensity / 0.85;
-        ctx.fillStyle = 'rgba(255,252,248,' + (0.7 + growI * 0.3).toFixed(2) + ')';
-        bars.forEach(function (cy) {
-          var h = maxBarH * growI;
-          ctx.fillRect(0, cy - h / 2, cvs.width, h);
-        });
-      }
+      var GROW_MS = 1800;
+      var HOLD_MS = 300;
+      var OUT_MS  = 700;
+      var phase   = 'grow';
+      var startT  = null;
+      var heroFired = false;
 
       function tick(now) {
         if (!startT) startT = now;
-        var elapsed   = now - startT;
-        var intensity, done;
+        var elapsed = now - startT;
+        ctx.clearRect(0, 0, cvs.width, cvs.height);
 
-        if (phase === 'in') {
-          intensity = Math.min(elapsed / BUILD_MS, 1);
-          if (intensity > 0.45) {
-            overlay.style.opacity = String(Math.max(1 - (intensity - 0.45) / 0.55, 0));
-          }
-          if (intensity >= 1) {
+        if (phase === 'grow') {
+          var p = Math.min(elapsed / GROW_MS, 1);
+          overlay.style.opacity = String(Math.max(1 - p * 1.5, 0));
+          ctx.fillStyle = 'rgba(255,252,248,' + (0.75 + p * 0.25).toFixed(2) + ')';
+          barCentres.forEach(function (cy) {
+            ctx.fillRect(0, cy - (maxBarH * p) / 2, cvs.width, maxBarH * p);
+          });
+          if (p >= 1) { phase = 'hold'; startT = now; }
+
+        } else if (phase === 'hold') {
+          ctx.fillStyle = 'rgba(255,252,248,1)';
+          ctx.fillRect(0, 0, cvs.width, cvs.height);
+          if (elapsed >= HOLD_MS) {
             if (!heroFired) {
               heroFired = true;
               glitchTl.kill();
@@ -152,17 +140,16 @@
               window.dispatchEvent(new CustomEvent('introComplete'));
               revealHero();
             }
-            phase  = 'out';
-            startT = now;
+            phase = 'out'; startT = now;
           }
-          done = false;
+
         } else {
-          intensity = Math.max(1 - elapsed / OUT_MS, 0);
-          done = (intensity <= 0);
+          var outP = Math.min(elapsed / OUT_MS, 1);
+          ctx.fillStyle = 'rgba(255,252,248,' + (1 - outP).toFixed(3) + ')';
+          ctx.fillRect(0, 0, cvs.width, cvs.height);
+          if (outP >= 1) { cvs.remove(); return; }
         }
 
-        if (done) { ctx.clearRect(0, 0, cvs.width, cvs.height); cvs.remove(); return; }
-        drawBars(intensity);
         requestAnimationFrame(tick);
       }
 
