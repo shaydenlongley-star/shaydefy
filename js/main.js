@@ -15,25 +15,6 @@
   /* ----------------------------------------
      PRELOADER — dismiss then kick off hero
   ---------------------------------------- */
-  var preloader = document.getElementById('preloader');
-
-  function dismissPreloader() {
-    if (preloader) {
-      preloader.style.transition = 'none';
-      preloader.classList.add('out');
-    }
-    document.body.style.overflow = '';
-  }
-
-  var ready = false;
-  function tryDismiss() {
-    if (ready) return;
-    ready = true;
-    setTimeout(dismissPreloader, 1700);
-  }
-
-  window.addEventListener('load', tryDismiss);
-  setTimeout(tryDismiss, 2200);
 
   /* ----------------------------------------
      INTRO — old site fullscreen, glitch out
@@ -41,7 +22,8 @@
   (function () {
     var overlay  = document.getElementById('introOverlay');
     var skipBtn  = document.getElementById('introSkip');
-    if (!overlay) { revealHero(); return; }
+    if (!overlay || sessionStorage.getItem('introDone')) { revealHero(); return; }
+    sessionStorage.setItem('introDone', '1');
 
     var fired = false;
 
@@ -195,7 +177,7 @@
      HERO REVEAL — word clip animation
   ---------------------------------------- */
   function revealHero() {
-    /* Safety: force-remove intro overlay regardless of intro.js state */
+    document.body.style.overflow = '';
     var introEl = document.getElementById('introOverlay');
     if (introEl) introEl.style.display = 'none';
 
@@ -499,8 +481,8 @@
       dot.classList.toggle('big', hovering);
     });
 
-    // VIEW label on work card hover
-    document.querySelectorAll('.work-card').forEach(function (card) {
+    // VIEW label only on cards with before/after
+    document.querySelectorAll('[data-before]').forEach(function (card) {
       card.addEventListener('mouseenter', function () {
         dot.classList.remove('big');
         dot.classList.add('view');
@@ -626,6 +608,45 @@
     if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
 
     gsap.registerPlugin(ScrollTrigger);
+
+    /* -- Hero wave rise on scroll -- */
+    (function () {
+      var heroEl = document.querySelector('.hero');
+      if (!heroEl) return;
+
+      var waveObj = { p: 0 };
+
+      ScrollTrigger.create({
+        trigger: heroEl,
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1.2,
+        onUpdate: function (self) {
+          waveObj.p = self.progress;
+          var p    = waveObj.p;
+          var ease = p * p * (3 - 2 * p); // smoothstep
+          var cam  = window.__heroMesh && window.__heroMesh.camera;
+          if (cam) {
+            cam.position.y = 16  - ease * 72;
+            cam.position.z = 125 - ease * 25;
+            cam.lookAt(0, 28 + ease * 20, 0);
+          }
+        }
+      });
+
+      /* Fade hero text out as wave rises */
+      gsap.to('.hero-container', {
+        opacity: 0,
+        y: -24,
+        ease: 'power2.in',
+        scrollTrigger: {
+          trigger: heroEl,
+          start: 'top top',
+          end: '60% top',
+          scrub: 1
+        }
+      });
+    })();
 
     /* -- SplitText heading reveals -- */
     function splitHeading(el) {
@@ -771,8 +792,8 @@
       closingH2.style.opacity = '1';
       closingH2.style.transform = 'none';
 
-      var twBefore = "Let\u2019s build something\nthe world ";
-      var twAfter  = 'remembers.';
+      var twBefore = "Make it impossible\nto ";
+      var twAfter  = 'ignore.';
       var twFull   = twBefore + twAfter;
 
       closingH2.innerHTML = '<span class="tw-typed"></span>';
@@ -1077,3 +1098,162 @@
   }
 
 })();
+
+/* ----------------------------------------
+   FLOW FIELD — reusable for any canvas
+---------------------------------------- */
+function initFlowField(canvasId, opts) {
+  var canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  var section = canvas.parentElement;
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var W, H, particles;
+  var mouse = { x: -9999, y: -9999 };
+  var COUNT   = opts.count   || 500;
+  var SPEED   = opts.speed   || 0.7;
+  var TRAIL   = opts.trail   || 0.08;
+  var YOFFSET = opts.yOffset || 0;
+
+  function resize() {
+    W = section.offsetWidth;
+    H = section.offsetHeight;
+    canvas.width  = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    canvas.style.width  = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.scale(dpr, dpr);
+    init();
+  }
+
+  function Particle() { this.reset(true); }
+  Particle.prototype.reset = function (random) {
+    this.x    = Math.random() * W;
+    this.y    = random ? Math.random() * H : (Math.random() < 0.5 ? 0 : H);
+    this.vx   = 0; this.vy = 0;
+    this.age  = random ? Math.floor(Math.random() * 250) : 0;
+    this.life = Math.random() * 200 + 150;
+  };
+  Particle.prototype.update = function () {
+    var angle = (Math.cos(this.x * 0.005) + Math.sin((this.y + YOFFSET) * 0.005)) * Math.PI;
+    this.vx += Math.cos(angle) * 0.18 * SPEED;
+    this.vy += Math.sin(angle) * 0.18 * SPEED;
+    var dx = mouse.x - this.x, dy = mouse.y - this.y;
+    var dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 130) { var f = (130 - dist) / 130; this.vx -= dx * f * 0.04; this.vy -= dy * f * 0.04; }
+    this.x += this.vx; this.y += this.vy;
+    this.vx *= 0.95; this.vy *= 0.95;
+    this.age++;
+    if (this.age > this.life) this.reset(false);
+    if (this.x < 0) this.x = W; if (this.x > W) this.x = 0;
+    if (this.y < 0) this.y = H; if (this.y > H) this.y = 0;
+  };
+  Particle.prototype.draw = function () {
+    var alpha = (1 - Math.abs(this.age / this.life - 0.5) * 2) * 0.55;
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = 'rgba(201,168,76,' + alpha + ')';
+    ctx.fillRect(this.x, this.y, 1.5, 1.5);
+  };
+
+  function init() { particles = []; for (var i = 0; i < COUNT; i++) particles.push(new Particle()); }
+
+  function tick() {
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = 'rgba(8,8,8,' + TRAIL + ')';
+    ctx.fillRect(0, 0, W, H);
+    for (var i = 0; i < particles.length; i++) { particles[i].update(); particles[i].draw(); }
+    requestAnimationFrame(tick);
+  }
+
+  function onMouseMove(e) { var r = canvas.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; }
+
+  resize(); tick();
+  window.addEventListener('resize', resize);
+  section.addEventListener('mousemove', onMouseMove);
+  section.addEventListener('mouseleave', function () { mouse.x = -9999; mouse.y = -9999; });
+}
+
+/* Pass document yOffset so all three canvases share the same angle phase */
+setTimeout(function () {
+  var processEl = document.getElementById('process');
+  var closingEl = document.getElementById('footerRevealClip');
+  initFlowField('processFlowField', { count: 500, speed: 0.7, trail: 0.08, yOffset: processEl ? processEl.offsetTop : 0 });
+  initFlowField('closingFlowField', { count: 250, speed: 0.5, trail: 0.1,  yOffset: closingEl ? closingEl.offsetTop : 0 });
+}, 100);
+
+/* ----------------------------------------
+   CONNECTING LINES — same dots as flow fields, travel top→bottom
+---------------------------------------- */
+setTimeout(function () {
+  var canvas = document.getElementById('connectingLines');
+  var fromEl = document.getElementById('process');
+  var toEl   = document.getElementById('footerRevealClip');
+  if (!canvas || !fromEl || !toEl) return;
+
+  var ctx   = canvas.getContext('2d');
+  var dpr   = window.devicePixelRatio || 1;
+  var W, H, yDoc, particles;
+  var SPEED = 0.7;
+  var COUNT = 14;
+
+  function spawnParticle(atTop) {
+    return {
+      x:    Math.random() * W,
+      y:    atTop ? Math.random() * H : 0,
+      vx:   0,
+      vy:   0,
+      age:  atTop ? Math.floor(Math.random() * 250) : 0,
+      life: Math.random() * 350 + 200
+    };
+  }
+
+  function layout() {
+    W    = window.innerWidth;
+    yDoc = fromEl.offsetTop + fromEl.offsetHeight;
+    H    = toEl.offsetTop - yDoc;
+    if (H <= 0) return;
+    canvas.style.top    = yDoc + 'px';
+    canvas.style.width  = W + 'px';
+    canvas.style.height = H + 'px';
+    canvas.width  = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    particles = [];
+    for (var i = 0; i < COUNT; i++) particles.push(spawnParticle(true));
+  }
+
+  function tick() {
+    /* Fade trail to transparent — no dark fill, just clear old pixels */
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.globalAlpha = 0.08;
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalCompositeOperation = 'source-over';
+
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      /* Same angle formula + yDoc offset = phase-continuous with both flow fields */
+      var angle = (Math.cos(p.x * 0.005) + Math.sin((p.y + yDoc) * 0.005)) * Math.PI;
+      p.vx += Math.cos(angle) * 0.18 * SPEED;
+      p.vy += Math.sin(angle) * 0.18 * SPEED + 0.06; /* gentle downward pull */
+      p.vx *= 0.95; p.vy *= 0.95;
+      p.x  += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      p.age++;
+      /* Reset to top when exiting bottom or exceeding life */
+      if (p.y > H || p.age > p.life) {
+        particles[i] = spawnParticle(false);
+        continue;
+      }
+      var alpha = (1 - Math.abs(p.age / p.life - 0.5) * 2) * 0.55;
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = 'rgba(201,168,76,1)';
+      ctx.fillRect(p.x, p.y, 1.5, 1.5);
+    }
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(tick);
+  }
+
+  layout();
+  tick();
+  window.addEventListener('resize', layout);
+}, 200);

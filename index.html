@@ -5,16 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Shaydefy — Premium web design studio based in Bangkok. Cinematic, high-performance websites for businesses that refuse to be ordinary.">
   <title>Shaydefy — Premium Web Design Studio · Bangkok</title>
+  <link rel="canonical" href="https://shaydefy.com/">
+
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Shaydefy">
+  <meta property="og:url" content="https://shaydefy.com/">
   <meta property="og:title" content="Shaydefy — Premium Web Design Studio · Bangkok">
   <meta property="og:description" content="We build cinematic, high-performance websites for businesses that refuse to be ordinary.">
+  <meta property="og:image" content="https://shaydefy.com/home page ss/siam-legal.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Shaydefy — Premium Web Design Studio · Bangkok">
+  <meta name="twitter:description" content="We build cinematic, high-performance websites for businesses that refuse to be ordinary.">
+  <meta name="twitter:image" content="https://shaydefy.com/home page ss/siam-legal.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "Shaydefy",
+    "description": "Premium web design studio based in Bangkok. Cinematic, high-performance websites for businesses that refuse to be ordinary.",
+    "url": "https://shaydefy.com",
+    "email": "hello@shaydefy.com",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Bangkok",
+      "addressCountry": "TH"
+    },
+    "serviceType": ["Web Design", "Web Development", "Brand Identity"],
+    "areaServed": ["Bangkok", "Thailand"]
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=6">
   <style>
-    /* Critical: hide everything until preloader ready */
     body { overflow:hidden; }
     @media(max-width:900px){
       .nav-menu{display:flex!important;position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;background:#080808!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:8px!important;padding:40px 28px!important;z-index:9999!important;opacity:0!important;transform:translateX(100%)!important;pointer-events:none!important;transition:opacity .35s ease,transform .35s cubic-bezier(.4,0,.2,1)!important}
@@ -51,7 +80,6 @@
       <hr class="era-hr">
       <div class="era-footer-note">Best viewed in Internet Explorer at 800&times;600 resolution &nbsp;&middot;&nbsp; &copy; 2009 Shaydefy. All Rights Reserved.</div>
     </div>
-    <button id="introSkip" class="era-skip">Skip &#8594;</button>
   </div>
 
   <!-- Page Transition Curtain -->
@@ -76,13 +104,6 @@
     <div class="cursor-preview-img" id="cursorPreviewImg"></div>
   </div>
 
-  <!-- Preloader -->
-  <div class="preloader" id="preloader" aria-hidden="true">
-    <span class="preloader-wordmark">
-      <span class="pl-char">S</span><span class="pl-char">H</span><span class="pl-char">A</span><span class="pl-char">Y</span><span class="pl-char">D</span><span class="pl-char">E</span><span class="pl-char">F</span><span class="pl-char">Y</span>
-    </span>
-    <div class="preloader-track"><div class="preloader-fill" id="preloaderFill"></div></div>
-  </div>
 
   <!-- Scroll Progress -->
   <div class="scroll-progress" id="scrollProgress"></div>
@@ -133,8 +154,8 @@
       <!-- Right: Featured stat/badge -->
       <div class="hero-aside" data-reveal data-reveal-delay="4">
         <div class="hero-badge">
-          <span class="hero-badge-num" data-count="10" data-suffix="+">10+</span>
-          <span class="hero-badge-label">Projects<br>Delivered</span>
+          <span class="hero-badge-num">Zero</span>
+          <span class="hero-badge-label">Templates<br>Ever Used</span>
         </div>
         <div class="hero-badge">
           <span class="hero-badge-num">BKK</span>
@@ -224,34 +245,42 @@
   <!-- ================================================
        WORK
   ================================================= -->
-  <section class="section" id="work" data-section-label="Work" data-section-num="03">
-    <div class="container">
+  <section class="section ls-section-work" id="work" data-section-label="Work" data-section-num="03">
 
+    <!-- Before & After — Lightning Split (full-bleed statement) -->
+    <div class="ls-stage" id="lsStage">
+      <div class="ls-layer ls-after">
+        <img src="home page ss/siam-legal.png" alt="Siam Legal — after Shaydefy redesign" class="ls-img" draggable="false">
+        <span class="ls-badge ls-badge-right">AFTER</span>
+      </div>
+      <div class="ls-layer ls-before" id="lsBefore">
+        <img src="home page ss/siam-legal-before.png" alt="Siam Legal — original site" class="ls-img" draggable="false">
+        <span class="ls-badge ls-badge-left">BEFORE</span>
+      </div>
+      <svg class="ls-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <filter id="ls-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="0.9" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <polyline id="lsOuter" fill="none" stroke="rgba(201,168,76,0.6)"   stroke-width="3"   vector-effect="non-scaling-stroke" filter="url(#ls-glow)"/>
+        <polyline id="lsMid"   fill="none" stroke="rgba(228,204,128,0.5)" stroke-width="2.2" vector-effect="non-scaling-stroke" filter="url(#ls-glow)"/>
+        <polyline id="lsCore"  fill="none" stroke="rgba(255,240,180,0.95)" stroke-width="1.2" vector-effect="non-scaling-stroke"/>
+      </svg>
+      <canvas class="ls-shader" id="lsShader"></canvas>
+    </div>
+
+    <div class="container">
       <div class="work-header" data-reveal>
         <div>
           <span class="eyebrow">Selected Work</span>
           <h2>Built to be remembered.</h2>
         </div>
-        <span class="work-count">01 — 07</span>
+        <span class="work-count">01 — 06</span>
       </div>
 
-      <!-- FEATURED -->
-      <a href="siam-legal/index.html" class="work-featured" data-reveal>
-        <div class="work-featured-img" style="background-image:url('home page ss/siam-legal.png')"></div>
-        <div class="work-featured-overlay"></div>
-        <div class="work-featured-body">
-          <div>
-            <span class="work-num">01</span>
-            <span class="work-tag">Legal &amp; Immigration</span>
-            <h3>Siam Legal International</h3>
-            <p>Cinematic redesign for Bangkok's leading international law firm — scroll-driven narrative, GSAP animations, full rebrand.</p>
-          </div>
-          <span class="work-arrow">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 15L15 3M15 3H6M15 3V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </span>
-        </div>
-      </a>
-
+      <div class="work-divider"></div>
       <!-- GRID -->
       <div class="work-grid">
 
@@ -266,7 +295,7 @@
           </div>
         </a>
 
-        <a href="praesidia-website/index.html" class="work-card" data-reveal data-preview="home page ss/praesidia.png">
+        <a href="praesidia-website/index.html" class="work-card" data-reveal data-preview="home page ss/praesidia.png" data-before="home%20page%20ss/praesidia-before.png" data-after="home%20page%20ss/praesidia.png" data-project="Praesidia Alliance">
           <div class="work-card-img" style="background-image:url('home page ss/praesidia.png')"></div>
           <div class="work-card-overlay"></div>
           <div class="work-card-body">
@@ -288,7 +317,7 @@
           </div>
         </a>
 
-        <a href="tradefarm-website/index.html" class="work-card" data-reveal data-preview="home page ss/tradefarm.png">
+        <a href="tradefarm-website/index.html" class="work-card" data-reveal data-preview="home page ss/tradefarm.png" data-before="home%20page%20ss/tradefarm-before.png" data-after="home%20page%20ss/tradefarm.png" data-project="Tradefarm">
           <div class="work-card-img" style="background-image:url('home page ss/tradefarm.png')"></div>
           <div class="work-card-overlay"></div>
           <div class="work-card-body">
@@ -328,12 +357,13 @@
   <!-- ================================================
        PROCESS — Orbital Timeline
   ================================================= -->
-  <section class="orbital-section section" id="process">
-    <div class="orbital-eyebrow-wrap container">
+  <section class="orbital-section section" id="process" style="position:relative;overflow:hidden;">
+    <canvas id="processFlowField" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
+    <div class="orbital-eyebrow-wrap container" style="position:relative;z-index:1;">
       <span class="eyebrow" data-reveal>How It Works</span>
       <p class="orbital-hint">Click any node to explore</p>
     </div>
-    <div class="orbital-stage" id="orbitalStage">
+    <div class="orbital-stage" id="orbitalStage" style="position:relative;z-index:1;">
       <!-- Centre orb -->
       <div class="orbital-center" id="orbitalCenter">
         <div class="orbital-center-ping"></div>
@@ -352,18 +382,20 @@
   <section class="section about-section" id="about" data-section-label="About" data-section-num="04">
     <div class="container">
       <div class="about-split">
-        <div class="about-left" data-reveal>
+        <div class="about-left" data-reveal style="position:relative;">
+          <div class="about-bg-num" aria-hidden="true">04</div>
           <span class="eyebrow">About</span>
-          <h2>Craft over<br><em>everything.</em></h2>
+          <h2>Premium web<br><em>experiences.</em></h2>
           <div class="gold-rule"></div>
-          <p>I'm a Bangkok-based web designer building premium, cinematic websites for businesses that take their digital presence seriously. Every site is custom-crafted — no templates, no shortcuts, no compromise.</p>
-          <p>I work with professional service firms, luxury brands, and ambitious businesses across Southeast Asia and beyond.</p>
+          <p>Built from scratch.</p>
+          <p>No templates. No compromises. No&nbsp;shortcuts.<br>Every pixel deliberate.</p>
+          <p>Based in Bangkok. Working globally.</p>
           <a href="#contact" class="btn btn-gold" style="margin-top:12px">Start a Project</a>
         </div>
         <div class="about-right" data-reveal data-reveal-delay="2">
           <div class="about-card">
-            <span class="about-card-num" data-count="10" data-suffix="+">10+</span>
-            <span class="about-card-label">Projects Completed</span>
+            <span class="about-card-num">Every Build</span>
+            <span class="about-card-label">From Scratch</span>
           </div>
           <div class="about-card">
             <span class="about-card-num" data-count="100" data-suffix="%">100%</span>
@@ -412,10 +444,11 @@
     </div>
   </section>
 
-  <section class="closing-section section" id="footerRevealClip">
-    <div class="container closing-inner">
+  <section class="closing-section section" id="footerRevealClip" style="position:relative;overflow:hidden;">
+    <canvas id="closingFlowField" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.5;"></canvas>
+    <div class="container closing-inner" style="position:relative;z-index:1;">
       <span class="eyebrow" data-reveal>Ready when you are</span>
-      <h2 data-reveal data-reveal-delay="1">Let's build something<br>the world <em>remembers.</em></h2>
+      <h2 data-reveal data-reveal-delay="1">Make it impossible<br>to <em>ignore.</em></h2>
       <div data-reveal data-reveal-delay="2">
         <a href="#contact" class="btn btn-gold" data-magnetic>Start a Project &nbsp;↗</a>
       </div>
@@ -424,21 +457,60 @@
 
   <footer class="footer">
     <div class="container footer-inner">
-      <span class="footer-logo">SHAYDEFY</span>
-      <span class="footer-copy">&copy; <span id="year"></span> Shaydefy. Bangkok, Thailand.</span>
-      <ul class="footer-links">
-        <li><a href="#work">Work</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
+      <div class="footer-top">
+        <span class="footer-logo">SHAYDEFY</span>
+        <p class="footer-tagline">Premium web experiences.<br>Built from scratch.</p>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">&copy; <span id="year"></span> Shaydefy. Bangkok, Thailand.</span>
+        <ul class="footer-links">
+          <li><a href="#work">Work</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <a href="mailto:hello@shaydefy.com" class="footer-email">hello@shaydefy.com</a>
+      </div>
     </div>
   </footer>
+
+  <!-- Connecting flow lines SVG -->
+  <canvas id="connectingLines" aria-hidden="true" style="position:absolute;left:0;pointer-events:none;z-index:5;display:block;"></canvas>
+
+  <!-- Before/After Overlay -->
+  <div class="ls-overlay" id="lsOverlay" aria-hidden="true">
+    <button class="ls-overlay-close" id="lsOverlayClose" aria-label="Close">&#x2715;</button>
+    <div class="ls-overlay-label" id="lsOverlayLabel"></div>
+    <div class="ls-stage ls-overlay-stage" id="lsOverlayStage">
+      <div class="ls-layer ls-after">
+        <img class="ls-img" id="lsOvAfterImg" draggable="false" alt="">
+        <span class="ls-badge ls-badge-right">AFTER</span>
+      </div>
+      <div class="ls-layer ls-before" id="lsOvBefore">
+        <img class="ls-img" id="lsOvBeforeImg" draggable="false" alt="">
+        <span class="ls-badge ls-badge-left">BEFORE</span>
+      </div>
+      <svg class="ls-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <filter id="ls-glow-ov" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="0.9" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <polyline id="lsOvOuter" fill="none" stroke="rgba(201,168,76,0.6)"    stroke-width="3"   vector-effect="non-scaling-stroke" filter="url(#ls-glow-ov)"/>
+        <polyline id="lsOvMid"   fill="none" stroke="rgba(228,204,128,0.5)"  stroke-width="2.2" vector-effect="non-scaling-stroke" filter="url(#ls-glow-ov)"/>
+        <polyline id="lsOvCore"  fill="none" stroke="rgba(255,240,180,0.95)" stroke-width="1.2" vector-effect="non-scaling-stroke"/>
+      </svg>
+      <canvas class="ls-shader" id="lsOvShader"></canvas>
+    </div>
+    <a class="ls-overlay-link" id="lsOverlayLink" href="#">View Full Project &nbsp;↗</a>
+  </div>
 
   <script type="module" src="js/mesh.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="js/lightning-split.js"></script>
 <script src="js/main.js?v=5"></script>
 </body>
 </html>
