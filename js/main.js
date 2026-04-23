@@ -1197,14 +1197,14 @@ setTimeout(function () {
   var COUNT   = 14;
   var OVERLAP = 280; /* px the canvas extends INTO the closing section */
 
-  function spawnParticle(atTop) {
+  function spawnParticle(staggered) {
     var LEAD = 200;
     return {
       x:    Math.random() * W,
-      y:    atTop ? Math.random() * H : Math.random() * LEAD, /* spawn in lead zone */
+      y:    staggered ? Math.random() * LEAD : 0, /* all start inside process section */
       vx:   0,
       vy:   0,
-      age:  atTop ? Math.floor(Math.random() * 250) : 0,
+      age:  staggered ? Math.floor(Math.random() * 200) : 0,
       life: Math.random() * 400 + 250
     };
   }
@@ -1223,7 +1223,7 @@ setTimeout(function () {
     canvas.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     particles = [];
-    for (var i = 0; i < COUNT; i++) particles.push(spawnParticle(true));
+    for (var i = 0; i < COUNT; i++) particles.push(spawnParticle(true /* stagger initial y so they don't all start at 0 */));
   }
 
   function tick() {
@@ -1243,7 +1243,7 @@ setTimeout(function () {
       p.x  += p.vx; p.y += p.vy;
       if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
       p.age++;
-      /* Reset to top when exiting bottom or exceeding life */
+      /* Reset to process section top — never spawn mid-canvas */
       if (p.y > H || p.age > p.life) {
         particles[i] = spawnParticle(false);
         continue;
