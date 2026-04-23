@@ -1194,18 +1194,27 @@ setTimeout(function () {
   var dpr   = window.devicePixelRatio || 1;
   var W, H, yDoc, particles;
   var SPEED   = 0.7;
-  var COUNT   = 14;
+  var COUNT   = 18;
   var OVERLAP = 280; /* px the canvas extends INTO the closing section */
 
   function spawnParticle(staggered) {
-    var LEAD = 200;
+    var LEAD    = 200;
+    var fromTop = Math.random() < 0.5; /* spawn from process zone or closing zone */
+    var y;
+    if (staggered) {
+      /* On init: scatter across both spawn zones only */
+      y = fromTop ? Math.random() * LEAD : H - Math.random() * OVERLAP;
+    } else {
+      /* On respawn: pick a zone randomly */
+      y = fromTop ? Math.random() * LEAD : H - Math.random() * OVERLAP;
+    }
     return {
       x:    Math.random() * W,
-      y:    staggered ? Math.random() * LEAD : 0, /* all start inside process section */
+      y:    y,
       vx:   0,
-      vy:   0,
+      vy:   fromTop ? 0 : -0.5, /* closing-zone particles start moving up */
       age:  staggered ? Math.floor(Math.random() * 200) : 0,
-      life: Math.random() * 400 + 250
+      life: Math.random() * 500 + 300
     };
   }
 
