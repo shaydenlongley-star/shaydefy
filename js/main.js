@@ -1193,24 +1193,28 @@ setTimeout(function () {
   var ctx   = canvas.getContext('2d');
   var dpr   = window.devicePixelRatio || 1;
   var W, H, yDoc, particles;
-  var SPEED = 0.7;
-  var COUNT = 14;
+  var SPEED   = 0.7;
+  var COUNT   = 14;
+  var OVERLAP = 280; /* px the canvas extends INTO the closing section */
 
   function spawnParticle(atTop) {
+    var LEAD = 200;
     return {
       x:    Math.random() * W,
-      y:    atTop ? Math.random() * H : 0,
+      y:    atTop ? Math.random() * H : Math.random() * LEAD, /* spawn in lead zone */
       vx:   0,
       vy:   0,
       age:  atTop ? Math.floor(Math.random() * 250) : 0,
-      life: Math.random() * 350 + 200
+      life: Math.random() * 400 + 250
     };
   }
 
   function layout() {
     W    = window.innerWidth;
-    yDoc = fromEl.offsetTop + fromEl.offsetHeight;
-    H    = toEl.offsetTop - yDoc;
+    var LEAD = 200; /* px the canvas reaches UP into the process section */
+    yDoc = fromEl.offsetTop + fromEl.offsetHeight - LEAD;
+    var gap = toEl.offsetTop - (yDoc + LEAD);
+    H    = LEAD + gap + OVERLAP; /* full height: lead + gap + overlap */
     if (H <= 0) return;
     canvas.style.top    = yDoc + 'px';
     canvas.style.width  = W + 'px';
