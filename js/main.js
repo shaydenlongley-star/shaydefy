@@ -1232,7 +1232,17 @@ setTimeout(function () {
     canvas.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     particles = [];
-    for (var i = 0; i < COUNT; i++) particles.push(spawnParticle(true /* stagger initial y so they don't all start at 0 */));
+    for (var i = 0; i < COUNT; i++) particles.push(spawnParticle(true));
+    /* 4 dedicated connectors — always travel top→bottom, stronger downward bias */
+    for (var j = 0; j < 4; j++) {
+      particles.push({
+        x: Math.random() * W, y: Math.random() * LEAD,
+        vx: 0, vy: 0.5,
+        age: Math.floor(Math.random() * 100),
+        life: 99999, /* never expire by age — reset only when they exit bottom */
+        connector: true
+      });
+    }
   }
 
   function tick() {
@@ -1244,23 +1254,32 @@ setTimeout(function () {
 
     for (var i = 0; i < particles.length; i++) {
       var p = particles[i];
-      /* Same angle formula + yDoc offset = phase-continuous with both flow fields */
       var angle = (Math.cos(p.x * 0.005) + Math.sin((p.y + yDoc) * 0.005)) * Math.PI;
-      p.vx += Math.cos(angle) * 0.18 * SPEED;
-      p.vy += Math.sin(angle) * 0.18 * SPEED + 0.06; /* gentle downward pull */
-      p.vx *= 0.95; p.vy *= 0.95;
-      p.x  += p.vx; p.y += p.vy;
-      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
-      p.age++;
-      /* Reset to process section top — never spawn mid-canvas */
-      if (p.y > H || p.age > p.life) {
-        particles[i] = spawnParticle(false);
-        continue;
+      if (p.connector) {
+        /* Connectors follow the field but with a strong downward bias */
+        p.vx += Math.cos(angle) * 0.18 * SPEED;
+        p.vy += Math.sin(angle) * 0.18 * SPEED + 0.18;
+        p.vx *= 0.95; p.vy *= 0.95;
+        p.x  += p.vx; p.y += p.vy;
+        if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+        if (p.y > H) { p.x = Math.random() * W; p.y = 0; p.vx = 0; p.vy = 0.5; p.age = 0; }
+        p.age++;
+        ctx.globalAlpha = 0.45;
+        ctx.fillStyle = 'rgba(201,168,76,1)';
+        ctx.fillRect(p.x, p.y, 1.5, 1.5);
+      } else {
+        p.vx += Math.cos(angle) * 0.18 * SPEED;
+        p.vy += Math.sin(angle) * 0.18 * SPEED + 0.06;
+        p.vx *= 0.95; p.vy *= 0.95;
+        p.x  += p.vx; p.y += p.vy;
+        if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+        p.age++;
+        if (p.y > H || p.age > p.life) { particles[i] = spawnParticle(false); continue; }
+        var alpha = (1 - Math.abs(p.age / p.life - 0.5) * 2) * 0.55;
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = 'rgba(201,168,76,1)';
+        ctx.fillRect(p.x, p.y, 1.5, 1.5);
       }
-      var alpha = (1 - Math.abs(p.age / p.life - 0.5) * 2) * 0.55;
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = 'rgba(201,168,76,1)';
-      ctx.fillRect(p.x, p.y, 1.5, 1.5);
     }
     ctx.globalAlpha = 1;
     requestAnimationFrame(tick);
