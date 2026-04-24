@@ -22,8 +22,8 @@
   (function () {
     var overlay  = document.getElementById('introOverlay');
     var skipBtn  = document.getElementById('introSkip');
-    if (!overlay || sessionStorage.getItem('introDone')) { revealHero(); return; }
-    sessionStorage.setItem('introDone', '1');
+    if (!overlay || localStorage.getItem('introDone')) { revealHero(); return; }
+    localStorage.setItem('introDone', '1');
 
     var fired = false;
 
